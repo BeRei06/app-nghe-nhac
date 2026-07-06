@@ -1,10 +1,18 @@
+# Thư viện
 node_modules/
+
+# File build/cache của Expo
 .expo/
+
+# Biến môi trường
 .env
+.env.local
+.env.*.local
+
+# File hệ thống macOS
 .DS_Store
 
-# Ignore everything in the root
-/*
-# Except the backend directory and this .gitignore file
-!/backend/
-!/.gitignore
+# Log files (tuỳ chọn thêm)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
