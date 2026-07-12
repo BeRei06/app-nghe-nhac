@@ -32,10 +32,23 @@ const User = sequelize.define(
       type: DataTypes.ENUM('user', 'admin'),
       defaultValue: 'user',
     },
+    strike_count: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'suspended', 'deleted'),
+      defaultValue: 'active',
+    },
+    last_tos_accepted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    }
   },
   {
     tableName: 'users',
     underscored: true,
+    paranoid: true, // Soft delete
     hooks: {
       beforeCreate: async (user) => {
         user.password = await bcrypt.hash(user.password, 10);
