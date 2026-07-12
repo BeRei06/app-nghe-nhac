@@ -1,40 +1,90 @@
-const express = require('express');
+const { Router } = require('express');
 const { body } = require('express-validator');
-const { register, login, getMe, changePassword } = require('../controllers/auth.controller');
-const { protect } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate.middleware');
+const { authenticate } = require('../middlewares/auth.middleware');
+const authController = require('../controllers/auth.controller');
 
-const router = express.Router();
+const router = Router();
 
+/**
+ * POST /register
+ * Register a new user account
+ */
 router.post(
   '/register',
-  validate([
-    body('name').notEmpty().withMessage('Tên không được để trống.'),
-    body('email').isEmail().withMessage('Email không hợp lệ.'),
-    body('password').isLength({ min: 6 }).withMessage('Mật khẩu tối thiểu 6 ký tự.'),
-  ]),
-  register
+  [
+    body('username')
+      .notEmpty()
+      .withMessage('Username is required.')
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage('Username must be at least 3 characters long.'),
+    body('email')
+      .notEmpty()
+      .withMessage('Email is required.')
+      .isEmail()
+      .withMessage('Please provide a valid email address.')
+      .normalizeEmail(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required.')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters long.'),
+    body('phone_number')
+      .optional()
+      .isMobilePhone()
+      .withMessage('Please provide a valid phone number.'),
+  ],
+  validate,
+  authController.register
 );
 
+/**
+ * POST /login
+ * Login with email and password
+ */
 router.post(
   '/login',
-  validate([
-    body('email').isEmail().withMessage('Email không hợp lệ.'),
-    body('password').notEmpty().withMessage('Mật khẩu không được để trống.'),
-  ]),
-  login
+  [
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required.'),
+  ],
+  validate,
+  authController.login
 );
 
-router.get('/me', protect, getMe);
+/**
+ * POST /logout
+ * Logout the current user (requires authentication)
+ */
+router.post(
+  '/logout',
+  authenticate,
+  authController.logout
+);
 
-router.patch(
-  '/change-password',
-  protect,
-  validate([
-    body('currentPassword').notEmpty().withMessage('Mật khẩu hiện tại không được để trống.'),
-    body('newPassword').isLength({ min: 6 }).withMessage('Mật khẩu mới tối thiểu 6 ký tự.'),
-  ]),
-  changePassword
+/**
+ * POST /refresh-token
+ * Refresh an expired access token using a valid refresh token
+ */
+router.post(
+  '/refresh-token',
+  authController.refreshToken
+);
+
+/**
+ * POST /accept-tos
+ * Accept new Terms of Service
+ */
+router.post(
+  '/accept-tos',
+  authenticate,
+  [
+    body('document_id').notEmpty().withMessage('Document ID is required.')
+  ],
+  validate,
+  authController.acceptTos
 );
 
 module.exports = router;
