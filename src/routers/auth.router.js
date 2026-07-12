@@ -12,6 +12,7 @@ router.post(
     body('name').notEmpty().withMessage('Tên không được để trống.'),
     body('email').isEmail().withMessage('Email không hợp lệ.'),
     body('password').isLength({ min: 6 }).withMessage('Mật khẩu tối thiểu 6 ký tự.'),
+    body('document_id').notEmpty().withMessage('Vui lòng cung cấp mã văn bản Điều khoản dịch vụ (document_id).')
   ]),
   register
 );
