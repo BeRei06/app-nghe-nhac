@@ -32,8 +32,7 @@ module.exports = (sequelize) => {
     },
     auth_provider: {
       type: DataTypes.STRING(50),
-      defaultValue: 'email',
-      allowNull: false,
+      defaultValue: 'email', // 'email','phone','google','apple'
     },
     apple_user_id: {
       type: DataTypes.STRING(255),
@@ -58,7 +57,7 @@ module.exports = (sequelize) => {
     },
     status: {
       type: DataTypes.STRING(20),
-      defaultValue: 'active', // 'active', 'suspended', 'deleted'
+      defaultValue: 'active', // 'active','suspended','deleted'
     },
     last_tos_accepted_at: {
       type: DataTypes.DATE,
@@ -66,11 +65,8 @@ module.exports = (sequelize) => {
     },
   }, {
     tableName: 'users',
-    paranoid: true, // Enable soft deletes
-    deletedAt: 'deleted_at',
+    paranoid: true, // Enables soft deletes by adding `deleted_at`
     timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
     hooks: {
       beforeCreate: async (user) => {
         if (user.password_hash) {
@@ -83,10 +79,25 @@ module.exports = (sequelize) => {
         }
       },
     },
+    defaultScope: {
+      attributes: { exclude: ['password_hash'] },
+    },
+    scopes: {
+      withPassword: {
+        attributes: {},
+      }
+    }
   });
 
-  User.prototype.comparePassword = function (plainPassword) {
-    return bcrypt.compare(plainPassword, this.password_hash);
+  User.prototype.comparePassword = async function (plainPassword) {
+    if (!this.password_hash) return false;
+    return await bcrypt.compare(plainPassword, this.password_hash);
+  };
+
+  User.prototype.toJSON = function () {
+    const values = { ...this.get() };
+    delete values.password_hash;
+    return values;
   };
 
   return User;

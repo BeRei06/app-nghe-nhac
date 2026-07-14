@@ -1,17 +1,50 @@
-const sequelize = require('../config/database');
-const User = require('./user.model');
-const Product = require('./product.model');
-const LegalDocument = require('./legal_document.model');
-const UserConsent = require('./user_consent.model');
+'use strict';
 
-// Associations
-User.hasMany(Product, { foreignKey: 'user_id', as: 'products' });
-Product.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/database.js')[env];
+const db = {};
 
-User.hasMany(UserConsent, { foreignKey: 'user_id', as: 'consents' });
-UserConsent.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
-LegalDocument.hasMany(UserConsent, { foreignKey: 'document_id', as: 'consents' });
-UserConsent.belongsTo(LegalDocument, { foreignKey: 'document_id', as: 'document' });
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
 
-module.exports = { sequelize, User, Product, LegalDocument, UserConsent };
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+// Sprint 1 Associations
+db.User.hasMany(db.UserSession, { foreignKey: 'user_id' });
+db.UserSession.belongsTo(db.User, { foreignKey: 'user_id' });
+
+db.User.belongsToMany(db.Role, { through: db.UserRole, foreignKey: 'user_id' });
+db.Role.belongsToMany(db.User, { through: db.UserRole, foreignKey: 'role_id' });
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db;

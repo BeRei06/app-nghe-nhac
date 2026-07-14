@@ -1,0 +1,48 @@
+MÔ TẢ BÀI TOÁN: ỨNG DỤNG MẠNG XÃ HỘI ÂM NHẠC (MUSIC SOCIAL NETWORK)
+1. Bối cảnh và Vấn đề
+Hiện nay, trên thị trường có hai dạng ứng dụng riêng biệt:
+1.	Nền tảng Streaming nhạc (Spotify, Apple Music): Tập trung vào việc nghe nhạc cá nhân, nhưng thiếu tính tương tác xã hội sâu sắc. Người dùng khó bộc lộ cảm xúc về một đoạn nhạc cụ thể hoặc thảo luận với những người cùng gu âm nhạc.
+2.	Mạng xã hội chung (Facebook, TikTok): Âm nhạc chỉ là yếu tố phụ trợ cho video hoặc hình ảnh. Không có không gian chuyên biệt dành riêng cho những người chỉ muốn chia sẻ và kết nối thuần túy qua âm thanh.
+Vấn đề đặt ra: Cần một nền tảng lai (Hybrid) - nơi âm nhạc vừa là nội dung cốt lõi để thưởng thức, vừa là phương tiện để giao tiếp, kết nối. Nền tảng này phải bảo vệ bản quyền/trải nghiệm nội bộ (nghe offline không bị tuồn file ra ngoài), đồng thời cho phép người dùng tự do sáng tạo, cắt ghép và chia sẻ cảm xúc âm nhạc của mình một cách tinh gọn nhất (không bị nhiễu loạn bởi tin nhắn rác hay chat nhóm).
+2. Mục tiêu dự án
+Xây dựng một nền tảng Mạng xã hội Âm nhạc Full-stack (Mobile App) cho phép người dùng không chỉ nghe nhạc mà còn tải lên, cắt ghép đoạn nhạc yêu thích, đính kèm cảm xúc (hashtag, status) và chia sẻ vào các cộng đồng nghe nhạc chuyên biệt.
+3. Yêu cầu chức năng chi tiết (Functional Requirements)
+Hệ thống được chia thành các nhóm tính năng cốt lõi sau:
+3.1. Nhóm tính năng Quản lý Audio & Trải nghiệm nghe nhạc
+•	Nghe nhạc Offline độc quyền (In-app Offline Mode):
+o	Người dùng có thể tải bài hát về máy để nghe khi không có mạng.
+o	Ràng buộc kỹ thuật: File tải về phải được mã hóa (Encryption) hoặc lưu ở thư mục ẩn (App-specific storage). File âm thanh chỉ có thể được giải mã và phát thông qua Audio Player của chính ứng dụng này. Không thể dùng app khác (như trình phát nhạc mặc định của điện thoại) để mở.
+•	Đăng tải nhạc cá nhân (User-Generated Content - UGC):
+o	Người dùng (Nhạc sĩ Indie, Creator) có thể upload file audio của riêng mình lên hệ thống.
+o	Nhạc sau khi duyệt có thể hiển thị public cho toàn mạng lưới người dùng khác cùng nghe và tương tác.
+3.2. Nhóm tính năng Mạng xã hội & Chia sẻ (Social Feed)
+•	Chia sẻ Bài hát / Đoạn nhạc (Snippet Share):
+o	Người dùng có quyền chọn chia sẻ toàn bộ bài hát HOẶC dùng công cụ tích hợp trong app để cắt một đoạn nhạc ngắn (Ví dụ: điệp khúc 15-30 giây) mà họ tâm đắc nhất.
+o	Quyền riêng tư: Có thể chọn chia sẻ cho "Mọi người" (Public) hoặc chỉ "Bạn bè" (Friends) hoặc chỉ mình tôi.
+•	Cấu trúc một Bài đăng chia sẻ (Post):
+o	Bao gồm: Audio (bài hát hoặc đoạn nhạc) + Nội dung văn bản (Text/Status) + Hashtags.
+o	Người dùng được phép tự do tạo và thêm các Hashtag mới theo ý muốn (VD: #chill, #sad_vibes, #nhac_cuoi_tuan).
+•	Tính toàn vẹn của dữ liệu chia sẻ (Traceability):
+o	Bất kỳ một "Đoạn nhạc cắt ra" (Snippet) nào được chia sẻ lên Feed đều bắt buộc phải chứa một liên kết (Hyperlink/Button) dẫn thẳng về bài hát gốc nguyên bản.
+o	Hệ thống phải map (ánh xạ) đúng ID của đoạn nhạc với ID của bài hát gốc, đảm bảo tính bản quyền và giúp người nghe dễ dàng tìm được bài full.
+3.3. Nhóm tính năng Cá nhân hóa Trang chủ (Home Dashboard)
+Trang chủ ứng dụng (Home) không chỉ là Feed bài viết mà còn là một Dashboard gợi ý thông minh, bao gồm các section:
+1.	Top 5 Hashtag Trending: Hiển thị 5 thẻ hashtag được sử dụng để gắn vào bài hát nhiều nhất trong thời gian thực (hoặc trong tuần).
+2.	Top Chart (Nhạc được yêu thích): Danh sách các bài hát có lượt tim/nghe cao nhất.
+3.	Gợi ý dành cho bạn (Personalized Recommendation): Đề xuất các bài hát mới dựa trên phân tích cụm chủ đề (Hashtag/Thể loại) mà User thường xuyên nghe và tương tác.
+4.	Nghe gần đây (Recently Played): Hiển thị lịch sử các bài hát, album mà User vừa nghe gần nhất để tiện truy cập lại.
+3.4. Nhóm tính năng Cộng đồng (Music Groups)
+•	Nhóm chia sẻ âm nhạc "Câm" (No-Chat Audio Groups):
+o	Người dùng có thể tạo hoặc tham gia các Group theo sở thích (VD: Hội ghiền Indie, Hội mê Rock thập niên 90).
+o	Luật đặc biệt: Các thành viên trong nhóm CHỈ ĐƯỢC PHÉP đăng tải/chia sẻ các bài hát hoặc đoạn nhạc (kèm caption/hashtag).
+o	Tuyệt đối KHÔNG có tính năng nhắn tin (chat text qua lại) giữa các thành viên trong nhóm. Nút bình luận (comment) có thể bị tắt hoặc giới hạn, nhằm đảm bảo không gian nhóm là một "Radio Station" thuần túy, không bị loãng nội dung bởi những cuộc tán gẫu.
+________________________________________
+4. Phân tích Thách thức Kỹ thuật (Technical Challenges)
+Để xây dựng base theo đề bài này, team Dev cần giải quyết các bài toán sau:
+1.	Bài toán lưu trữ và cắt nhạc (Snippet Engine):
+o	Giải pháp tối ưu: Thay vì cắt file MP3 thực tế trên Server (gây tốn dung lượng lưu trữ), ứng dụng chỉ cần lưu trữ Timestamps (Thời gian bắt đầu và kết thúc. Ví dụ: start: 01:20, end: 01:50) kèm theo Song_ID gốc. Khi người dùng bấm nghe Snippet, Player sẽ stream bài gốc nhưng chỉ phát đúng đoạn Timestamp đó.
+2.	Bài toán Bảo mật Offline Music (DRM):
+o	Giải pháp: Khi tải file từ API về điện thoại, app sẽ sử dụng thư viện mã hóa (ví dụ: AES-256) để mã hóa file audio thành một định dạng không đọc được (vd: .enc). Khi bật chế độ nghe offline trong App, App sẽ nạp file này vào bộ nhớ tạm (RAM), giải mã on-the-fly và đẩy vào Audio Player.
+3.	Thuật toán Gợi ý (Recommendation Engine):
+o	Sử dụng cơ sở dữ liệu đồ thị (Neo4j) hoặc đơn giản là truy vấn SQL đếm tần suất tương tác (Count & Group By) giữa User_ID và Hashtag_ID để tìm ra Top thể loại user thích, sau đó Random các bài hát có cùng Hashtag tương ứng.
+

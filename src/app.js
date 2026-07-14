@@ -1,22 +1,34 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
-const router = require('./routers');
-const errorMiddleware = require('./middlewares/error.middleware');
+const cookieParser = require('cookie-parser');
+const mainRouter = require('../routers');
 
 const app = express();
 
-app.use(cors());
-app.use(morgan('dev'));
+const whitelist = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.use(cookieParser());
+
+app.use('/api', mainRouter);
+
+app.get('/', (req, res) => {
+  res.send('Music Social Network API is running...');
 });
-
-app.use('/api', router);
-
-app.use(errorMiddleware);
 
 module.exports = app;

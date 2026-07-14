@@ -1,0 +1,61 @@
+ĐẶC TẢ USE CASE & YÊU CẦU API BACKEND (MASTER BLUEPRINT)
+1. MODULE USER, AUTH & PHÁP LÝ (LEGAL CONFORMITY)
+1.1. Đăng ký & Chấp thuận Điều khoản
+API Register:
+Nhận thông tin User + document_id (ID của ToS hiện hành).
+Backend lưu User và tạo bản ghi trong user_consents.
+Gán role = 'user' mặc định trong user_roles.
+API Login: Trả về Access/Refresh Token + strike_count + thông báo nếu có ToS mới cần ký lại.
+API Check Consent: Middleware kiểm tra nếu users.last_tos_accepted_at cũ hơn legal_documents.effective_at thì yêu cầu User ký bản mới trước khi tiếp tục.
+1.2. Quản lý Tài khoản & Quyền hạn
+API Update Profile: Cho phép sửa thông tin cá nhân.
+API Soft Delete Account: Cập nhật status = 'deleted', deleted_at = NOW().
+Lưu ý: Các dữ liệu liên quan (songs, posts) cũng phải chuyển trạng thái ẩn.
+2. MODULE MUSIC & BẢN QUYỀN 3 GIAI ĐOẠN (SOUNDCLOUD LOGIC)
+2.1. Quy trình Upload nhạc (Creator)
+API Upload Audio (Chỉ dành cho Creator):
+Bước 1 (Checksum - Gđ 2): Backend tính SHA-256 của file. Truy vấn bảng copyright_blacklist. Nếu có -> Trả lỗi 403 (File bị cấm).
+Bước 2 (Processing): Worker chuyển đổi HLS (.m3u8), tính toán Chromaprint.
+Bước 3 (Fingerprinting - Gđ 3): Gửi Fingerprint lên AcoustID API.
+Nếu Score > 0.9: Cập nhật copyright_status = 'matched', lưu metadata (ca sĩ, bài hát gốc, link mua nhạc). Set is_eligible_for_monetization = false.
+Nếu không khớp: Set copyright_status = 'clean'.
+Lưu Database: Lưu vào songs (status = 'pending') và audio_fingerprints.
+2.2. Kiểm duyệt & Khiếu nại
+API Admin Approve Music: Admin xem danh sách nhạc pending, nhấn duyệt -> status = 'approved'.
+API Submit Copyright Dispute: User gửi khiếu nại kèm minh chứng (evidence_url). Lưu vào copyright_disputes.
+API Resolve Dispute: Admin xử lý khiếu nại. Nếu bác bỏ -> Giữ nguyên trạng thái vi phạm, cộng 1 strike_count cho User.
+3. MODULE POST & FEED (SNIPPET SOCIAL)
+3.1. Bài đăng Snippet
+API Create Post: Lưu song_id, start_time, end_time.
+Ràng buộc: Nếu songs.copyright_status = 'flagged', cấm tạo post cho đến khi được duyệt.
+API Get Feed: Đọc danh sách ID từ feed_recommendations.
+Logic UI: Nếu bài hát gốc có nhãn bản quyền (matched), API phải trả về thêm các trường external_artist_name và external_buy_link để Frontend hiển thị nút "Mua nhạc".
+4. MODULE CỘNG ĐỒNG "CÂM" (GROUPS)
+4.1. Quản lý Nhóm & Quyền nội bộ
+API Join/Leave: Quản lý thành viên.
+API Manage Group Roles: Creator của nhóm thiết lập quyền (Post bài, Duyệt bài) qua group_roles.
+API Share to Group: Ghi nhận vào group_posts.
+Ràng buộc Backend: Mọi Endpoint trong Group Module phải kiểm tra và từ chối nếu có dữ liệu text nhắn tin (No-chat policy).
+5. MODULE QUẢN TRỊ & KIỂM DUYỆT (ADMIN MODERATION)
+5.1. Nhật ký Quản trị (Audit Logs)
+Middleware Audit: Bất kỳ API nào có tiền tố /api/admin/* khi thực hiện thành công phải tự động ghi log vào bảng admin_audit_logs.
+5.2. Hệ thống Báo cáo (Report System)
+API Submit Report: User báo cáo (Vi phạm bản quyền, nội dung nhạy cảm...).
+API Handle Report: Admin tiếp nhận xử lý.
+Nếu xóa nội dung: Cập nhật deleted_at, ghi log Admin.
+Nếu là vi phạm bản quyền: Tự động thêm SHA-256 của file vào copyright_blacklist để chặn vĩnh viễn.
+6. MODULE THƯ VIỆN & ANALYTICS
+6.1. Offline & Theo dõi
+API Download Song: Ghi nhận vào user_downloads (Hỗ trợ DRM).
+API Tracking Log: Nhận dữ liệu duration_listened, is_skipped để phục vụ thuật toán gợi ý nhạc.
+7. CÁC QUY TẮC NGHIỆP VỤ (BUSINESS LOGIC RULES) - DÀNH CHO DEV
+Quy tắc "3 Gậy" (Strike Policy):
+Mỗi khi Admin xử lý một khiếu nại bản quyền thất bại hoặc duyệt một Report bản quyền đúng -> users.strike_count += 1.
+Nếu strike_count >= 3 -> Tự động đổi users.status = 'suspended'. Chặn mọi quyền truy cập API trừ API "Khiếu nại tài khoản".
+Quy tắc Xóa mềm (Soft Delete):
+Query SELECT cho End-user luôn phải có WHERE deleted_at IS NULL.
+Dữ liệu bị xóa mềm vẫn được hiển thị trong Admin Dashboard (có đánh dấu) để phục vụ tra cứu.
+Quy tắc Bản quyền (Copyright First):
+Khi copyright_status = 'matched', hệ thống tự động chèn thông tin "Link mua nhạc" vào Response của bài hát để bảo vệ nền tảng trước các khiếu nại pháp lý (Fair Use).
+Quy tắc No-chat:
+Hệ thống không cung cấp bất kỳ bảng nào lưu trữ messages. Mọi giao tiếp chỉ thông qua Snippets và Caption của bài đăng.

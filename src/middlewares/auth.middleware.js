@@ -18,6 +18,10 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Token không hợp lệ.' });
     }
 
+    if (user.status !== 'active') {
+      return res.status(403).json({ success: false, message: 'Tài khoản không hoạt động hoặc đã bị đình chỉ.' });
+    }
+
     req.user = user;
     next();
   } catch {
@@ -32,4 +36,20 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly };
+const isCreator = (req, res, next) => {
+  // Dựa theo schema mới, user sẽ có trường is_creator
+  if (!req.user.is_creator) {
+    return res.status(403).json({ success: false, message: 'Chỉ Creator mới có quyền này.' });
+  }
+  next();
+};
+
+const checkActive = (req, res, next) => {
+  if (req.user.status !== 'active') {
+    return res.status(403).json({ success: false, message: 'Tài khoản không hoạt động.' });
+  }
+  next();
+};
+
+
+module.exports = { protect, adminOnly, isCreator, checkActive };
