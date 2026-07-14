@@ -1,27 +1,27 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const SongHashtag = sequelize.define('SongHashtag', {
-    song_id: {
+  const UserRole = sequelize.define('UserRole', {
+    user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       references: {
-        model: 'songs',
+        model: 'users',
         key: 'id',
       },
     },
-    hashtag_id: {
+    role_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       references: {
-        model: 'hashtags',
+        model: 'roles',
         key: 'id',
       },
     },
   }, {
-    tableName: 'song_hashtags',
+    tableName: 'user_roles',
     timestamps: false,
   });
 
-  return SongHashtag;
+  return UserRole;
 };

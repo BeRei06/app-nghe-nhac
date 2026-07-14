@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
-const { User, Role } = require('../models');
+const { User, Role } = require('../../models');
 
-const protect = async (req, res, next) => {
+exports.protect = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -21,12 +21,8 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    if (user.status === 'suspended') {
-      return res.status(403).json({ message: 'Account is suspended' });
-    }
-    
-    if (user.status === 'deleted') {
-        return res.status(401).json({ message: 'Account has been deleted' });
+    if (user.status !== 'active') {
+      return res.status(403).json({ message: `Account is ${user.status}` });
     }
 
     req.user = user;
@@ -35,13 +31,3 @@ const protect = async (req, res, next) => {
     return res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };
-
-const creatorOnly = (req, res, next) => {
-    const isCreator = req.user.Roles.some(role => role.name === 'creator');
-    if (!isCreator) {
-        return res.status(403).json({ message: 'Access denied. Creator role required.' });
-    }
-    next();
-};
-
-module.exports = { protect, creatorOnly };

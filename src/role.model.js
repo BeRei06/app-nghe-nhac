@@ -1,21 +1,25 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Hashtag = sequelize.define('Hashtag', {
+  const Role = sequelize.define('Role', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(50),
       unique: true,
       allowNull: false,
     },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   }, {
-    tableName: 'hashtags',
+    tableName: 'roles',
     timestamps: false,
   });
 
-  return Hashtag;
+  return Role;
 };
