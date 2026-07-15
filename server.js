@@ -1,6 +1,6 @@
 require('dotenv').config();
 const app = require('./src/app');
-const { sequelize } = require('./models'); // Đường dẫn này vẫn đúng nếu models/index.js ở thư mục gốc
+const { sequelize } = require('./src/models');
 
 const PORT = process.env.PORT || 3000;
 

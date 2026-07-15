@@ -21,20 +21,8 @@ router.use('/feed', feedRouter);
 const groupRouter = require('./group.router');
 router.use('/groups', groupRouter);
 
-// Sprint 5
-const playlistRouter = require('./playlist.router');
-const notificationRouter = require('./notification.router');
-const searchRouter = require('./search.router');
-router.use('/playlists', playlistRouter);
-router.use('/notifications', notificationRouter);
-router.use('/search', searchRouter);
-
-// Sprint 6
-const adminRouter = require('./admin.router');
-const reportRouter = require('./report.router');
-const copyrightRouter = require('./copyright.router');
-router.use('/admin', adminRouter);
-router.use('/reports', reportRouter);
-router.use('/copyright', copyrightRouter);
+// Sprint 5 & 6 will be added here
+// const libraryRouter = require('./library.router');
+// ... and so on for all other routers
 
 module.exports = router;
