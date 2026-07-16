@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         key: 'id',
       },
     },
-    shared_by: {
+    shared_by_user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: 'users', key: 'id' },

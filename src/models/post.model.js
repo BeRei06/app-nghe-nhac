@@ -41,6 +41,9 @@ module.exports = (sequelize) => {
     timestamps: true,
     validate: {
         snippetDuration() {
+            if (this.snippet_start_time >= this.snippet_end_time) {
+                throw new Error('Snippet end time must be after start time.');
+            }
             if ((this.snippet_end_time - this.snippet_start_time) > 60) {
                 throw new Error('Snippet duration cannot exceed 60 seconds.');
             }

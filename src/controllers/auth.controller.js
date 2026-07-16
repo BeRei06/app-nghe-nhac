@@ -15,6 +15,46 @@ const signRefreshToken = (id) =>
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
   });
 
+// --- Helpers ---
+
+/**
+ * Tạo username độc nhất dựa trên email.
+ * @param {string} email - Email của người dùng.
+ * @param {object} transaction - Transaction của Sequelize.
+ * @returns {Promise<string>} Username độc nhất.
+ */
+const generateUniqueUsername = async (email, transaction) => {
+  let username, existingUsername;
+  const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_.]/g, '');
+  let attempts = 0;
+
+  do {
+    const suffix = attempts > 0 ? uuidv4().substring(0, 6) : uuidv4().substring(0, 4);
+    username = `${baseUsername}_${suffix}`;
+    existingUsername = await User.findOne({ where: { username }, transaction });
+    attempts++;
+  } while (existingUsername && attempts < 5);
+
+  if (existingUsername) {
+    throw new Error('Không thể tạo username độc nhất.');
+  }
+  return username;
+};
+
+const generateTokensAndCreateSession = async (user, req, transaction) => {
+  const accessToken = signAccessToken(user.id);
+  const refreshToken = signRefreshToken(user.id);
+
+  // Decode refresh token để lấy thời gian hết hạn (exp) một cách chính xác.
+  // Điều này đảm bảo session và token luôn đồng bộ, thay vì hardcode 7 ngày.
+  const decodedRefreshToken = jwt.decode(refreshToken);
+  // 'exp' là UNIX timestamp (giây), cần chuyển sang mili-giây cho đối tượng Date.
+  const expiresAt = new Date(decodedRefreshToken.exp * 1000);
+
+  await UserSession.create({ user_id: user.id, refresh_token: refreshToken, expires_at: expiresAt, device_id: req.headers['user-agent'] }, { transaction });
+  return { accessToken, refreshToken };
+};
+
 const register = async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
@@ -54,24 +94,13 @@ const register = async (req, res, next) => {
       accepted_at: new Date()
     }, { transaction: t });
 
+    const { accessToken, refreshToken } = await generateTokensAndCreateSession(user, req, t);
+
     await t.commit();
-    
-    const accessToken = signAccessToken(user.id);
-    const refreshToken = signRefreshToken(user.id);
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // Match refresh token expiry
-
-    await UserSession.create({
-      user_id: user.id,
-      refresh_token: refreshToken,
-      expires_at: expiresAt,
-      device_id: req.headers['user-agent'] // Example device_id
-    });
 
     res.status(201).json({ 
       success: true, 
-      data: { user, access_token: accessToken, refresh_token: refreshToken } 
+      data: { user: user.toJSON(), access_token: accessToken, refresh_token: refreshToken } 
     });
   } catch (error) {
     await t.rollback();
@@ -96,21 +125,7 @@ const login = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Tài khoản đã bị đình chỉ.' });
     }
 
-    const accessToken = signAccessToken(rawUser.id);
-    const refreshToken = signRefreshToken(rawUser.id);
-    const userJSON = rawUser.toJSON();
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // Match refresh token expiry
-
-    // Tạo hoặc cập nhật session
-    await UserSession.create({
-      user_id: rawUser.id,
-      refresh_token: refreshToken,
-      expires_at: expiresAt,
-      device_id: req.headers['user-agent']
-    });
-
+    const { accessToken, refreshToken } = await generateTokensAndCreateSession(rawUser, req);
 
     // Check if new ToS is available
     const latestToS = await LegalDocument.findOne({ order: [['effective_at', 'DESC']] });
@@ -122,7 +137,7 @@ const login = async (req, res, next) => {
     res.json({ 
       success: true, 
       data: { 
-        user: userJSON, 
+        user: rawUser.toJSON(), 
         access_token: accessToken,
         refresh_token: refreshToken,
         strike_count: rawUser.strike_count,
@@ -209,6 +224,7 @@ const loginWithGoogle = async (req, res, next) => {
     return res.status(400).json({ success: false, message: 'Vui lòng cung cấp access token từ Google.' });
   }
 
+  const t = await sequelize.transaction();
   try {
     const response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -216,49 +232,46 @@ const loginWithGoogle = async (req, res, next) => {
 
     const { email, name, picture } = response.data;
 
-    let user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email }, transaction: t });
 
-    if (user && user.auth_provider !== 'google') {
+    if (user && user.auth_provider !== 'google' && user.auth_provider !== null) {
+      await t.rollback();
       return res.status(409).json({ success: false, message: `Email này đã được đăng ký bằng ${user.auth_provider}. Vui lòng đăng nhập bằng phương thức đó.` });
     }
 
     if (!user) {
+      const username = await generateUniqueUsername(email, t);
       user = await User.create({
-        email,
-        name,
-        username: `${email.split('@')[0]}_${uuidv4().substring(0, 4)}`, // Generate unique username
-        auth_provider: 'google',
-        avatar_url: picture,
-        password_hash: null, // No password for OAuth users
-        status: 'active',
-      });
+          email,
+          name,
+          username,
+          auth_provider: 'google',
+          avatar_url: picture,
+          password_hash: null,
+          status: 'active',
+      }, { transaction: t });
     }
 
-    const newAccessToken = signAccessToken(user.id);
-    const newRefreshToken = signRefreshToken(user.id);
+    const { accessToken, refreshToken } = await generateTokensAndCreateSession(user, req, t);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await UserSession.create({
-      user_id: user.id,
-      refresh_token: newRefreshToken,
-      expires_at: expiresAt,
-      device_id: req.headers['user-agent'],
-    });
+    await t.commit();
 
     res.json({
       success: true,
       data: {
-        user,
-        access_token: newAccessToken,
-        refresh_token: newRefreshToken,
+        user: user.toJSON(),
+        access_token: accessToken,
+        refresh_token: refreshToken,
       },
     });
   } catch (error) {
+    await t.rollback();
     // Handle token validation error from Google
     if (error.response && error.response.status === 401) {
       return res.status(401).json({ success: false, message: 'Google access token không hợp lệ.' });
+    }
+    if (error.message === 'Không thể tạo username độc nhất.') {
+        return next(error);
     }
     next(error);
   }
@@ -271,23 +284,30 @@ const loginWithApple = async (req, res, next) => {
     return res.status(400).json({ success: false, message: 'Vui lòng cung cấp identity_token từ Apple.' });
   }
 
+  const t = await sequelize.transaction();
   try {
     const { sub, email } = await appleSignIn.verifyIdToken(identity_token, {
       audience: process.env.APPLE_BUNDLE_ID,
     });
 
-    let user = await User.findOne({ where: { apple_user_id: sub } });
+    let user = await User.findOne({ where: { apple_user_id: sub }, transaction: t });
 
     if (!user && email) {
-      user = await User.findOne({ where: { email } });
-    }
-
-    if (user && user.auth_provider !== 'apple') {
-      return res.status(409).json({ success: false, message: `Tài khoản này đã được đăng ký bằng ${user.auth_provider}. Vui lòng đăng nhập bằng phương thức đó.` });
+        user = await User.findOne({ where: { email }, transaction: t });
+        if (user) {
+            if (user.auth_provider !== 'apple' && user.auth_provider !== null) {
+                await t.rollback();
+                return res.status(409).json({ success: false, message: `Tài khoản này đã được đăng ký bằng ${user.auth_provider}. Vui lòng đăng nhập bằng phương thức đó.` });
+            }
+            user.apple_user_id = sub;
+            user.auth_provider = 'apple';
+            await user.save({ transaction: t });
+        }
     }
 
     if (!user) {
       if (!email) {
+        await t.rollback();
         return res.status(400).json({ success: false, message: 'Không thể tạo tài khoản do Apple không cung cấp email. Vui lòng thử lại và cho phép chia sẻ email của bạn.' });
       }
 
@@ -296,33 +316,30 @@ const loginWithApple = async (req, res, next) => {
         name = `${appleUser.name.firstName || ''} ${appleUser.name.lastName || ''}`.trim();
       }
 
+      const username = await generateUniqueUsername(email, t);
+
       user = await User.create({
         email,
         name,
-        username: `${email.split('@')[0]}_${uuidv4().substring(0, 6)}`,
+        username,
         auth_provider: 'apple',
         apple_user_id: sub,
         password_hash: null,
         status: 'active',
-      });
+      }, { transaction: t });
     }
 
-    const newAccessToken = signAccessToken(user.id);
-    const newRefreshToken = signRefreshToken(user.id);
+    const { accessToken, refreshToken } = await generateTokensAndCreateSession(user, req, t);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    await t.commit();
 
-    await UserSession.create({
-      user_id: user.id,
-      refresh_token: newRefreshToken,
-      expires_at: expiresAt,
-      device_id: req.headers['user-agent'],
-    });
-
-    res.json({ success: true, data: { user, access_token: newAccessToken, refresh_token: newRefreshToken } });
+    res.json({ success: true, data: { user: user.toJSON(), access_token: accessToken, refresh_token: refreshToken } });
   } catch (error) {
+    await t.rollback();
     console.error('Apple Sign-In Error:', error);
+    if (error.message === 'Không thể tạo username độc nhất.') {
+        return next(error);
+    }
     return res.status(401).json({ success: false, message: 'Apple identity_token không hợp lệ hoặc đã hết hạn.' });
   }
 };

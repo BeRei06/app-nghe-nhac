@@ -13,22 +13,39 @@ const audioQueue = new Queue('audio-processing', { connection });
 
 // 2. Create a worker to process tasks from the queue
 const audioWorker = new Worker('audio-processing', async job => {
+    const { Song } = require('../models'); // Import model bên trong worker
     console.log(`[Worker] Processing job #${job.id} for song upload.`);
     const { fileHash, originalname, songId } = job.data;
 
-    // --- BACKGROUND PROCESSING LOGIC ---
-    // TODO:
-    // 1. Retrieve the temporary file (e.g., from S3) using a key passed in the job data.
-    // 2. Use fluent-ffmpeg to convert the audio to HLS (.m3u8) format.
-    // 3. Use fingerprinting tools to generate `fingerprint_code` and `acoustid_id`.
-    // 4. Update the 'Song' and 'AudioFingerprint' records in the database with the new URLs, duration, and fingerprint data.
-    //    Example: await Song.update({ status: 'approved', hls_streaming_url: '...' }, { where: { id: songId } });
-    console.log(`[Worker] Simulating HLS conversion for ${originalname} (Hash: ${fileHash})`);
-    
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 5000)); 
+    try {
+        // --- BACKGROUND PROCESSING LOGIC ---
+        // TODO:
+        // 1. Lấy file tạm (ví dụ: từ S3) bằng key được truyền vào job data.
+        // 2. Dùng fluent-ffmpeg để chuyển đổi audio sang định dạng HLS (.m3u8).
+        // 3. Dùng các công cụ fingerprinting để tạo `fingerprint_code` và `acoustid_id`.
+        // 4. Cập nhật bản ghi 'Song' và 'AudioFingerprint' trong database với URL, duration, và dữ liệu fingerprint mới.
+        
+        console.log(`[Worker] Simulating HLS conversion for ${originalname} (Hash: ${fileHash})`);
+        
+        // Giả lập thời gian xử lý
+        await new Promise(resolve => setTimeout(resolve, 5000)); 
 
-    console.log(`[Worker] Finished processing job #${job.id}.`);
+        // Khi thành công:
+        const hlsUrl = `path/to/processed/${songId}/playlist.m3u8`; // URL ví dụ
+        await Song.update(
+            { status: 'approved', hls_streaming_url: hlsUrl, duration: 210 }, // duration ví dụ
+            { where: { id: songId } }
+        );
+        // TODO: Tạo bản ghi AudioFingerprint tại đây...
+
+        console.log(`[Worker] Finished processing job #${job.id}.`);
+    } catch (error) {
+        console.error(`[Worker] Error processing job #${job.id} for song ${songId}:`, error.message);
+        // Khi thất bại, cập nhật trạng thái bài hát thành 'failed'
+        await Song.update({ status: 'failed' }, { where: { id: songId } });
+        // Ném lỗi ra ngoài để BullMQ ghi nhận job này là 'failed'
+        throw error;
+    }
 }, { connection });
 
 // --- Worker Event Listeners for Monitoring ---

@@ -56,5 +56,27 @@ exports.uploadAudio = async (req, res) => {
 
 // GET /upload/status/:song_id
 exports.getUploadStatus = async (req, res) => {
-    res.status(501).json({ message: 'Not implemented' });
+    const { song_id } = req.params;
+
+    try {
+        const song = await Song.findByPk(song_id, {
+            // Chỉ lấy các trường cần thiết cho client
+            attributes: ['id', 'status', 'title', 'hls_streaming_url', 'copyright_status']
+        });
+
+        if (!song) {
+            return res.status(404).json({ message: 'Song not found.' });
+        }
+
+        // Trả về trạng thái hiện tại của bài hát từ database.
+        // Worker sẽ cập nhật trạng thái này khi xử lý xong (approved/failed).
+        res.status(200).json({
+            songId: song.id,
+            status: song.status,
+            details: song // Trả về toàn bộ object để client có thể lấy hls_streaming_url khi 'approved'
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error while fetching status.', error: error.message });
+    }
 };

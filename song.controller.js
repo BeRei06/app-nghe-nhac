@@ -39,35 +39,57 @@ exports.getSongById = async (req, res) => {
     }
 };
 
-// POST /songs - Creator uploads metadata (after file upload)
-exports.createSong = async (req, res) => {
-    // hashtags là một mảng các string, ví dụ: ['#pop', '#chill']
-    const { title, hls_streaming_url, duration, genre_id, hashtags } = req.body;
+// PUT /songs/:id - Creator updates song metadata
+exports.updateSong = async (req, res) => {
+    const { id } = req.params;
+    // Chỉ cho phép creator cập nhật các trường này
+    const { title, genre_id, hashtags } = req.body;
     const t = await sequelize.transaction();
-    try {
-        const newSong = await Song.create({
-            title,
-            hls_streaming_url,
-            duration,
-            genre_id,
-            creator_id: req.user.id,
-        }, { transaction: t });
 
-        if (hashtags && hashtags.length > 0) {
+    try {
+        const song = await Song.findByPk(id, { transaction: t });
+
+        if (!song) {
+            await t.rollback();
+            return res.status(404).json({ message: 'Song not found' });
+        }
+
+        // Chỉ creator của bài hát mới có quyền chỉnh sửa
+        if (song.creator_id !== req.user.id) {
+            await t.rollback();
+            return res.status(403).json({ message: 'You are not authorized to update this song.' });
+        }
+
+        // Cập nhật các trường được phép
+        // Chỉ cập nhật nếu giá trị được cung cấp (kể cả chuỗi rỗng hoặc null)
+        if (title !== undefined) {
+            song.title = title;
+        }
+        if (genre_id !== undefined) {
+            song.genre_id = genre_id;
+        }
+        await song.save({ transaction: t });
+
+        // Cho phép cập nhật hashtags (bao gồm cả việc xóa hết bằng mảng rỗng `[]`)
+        if (hashtags) {
             const hashtagInstances = await Promise.all(
                 hashtags.map(name =>
                     Hashtag.findOrCreate({
-                        where: { name: name.startsWith('#') ? name.substring(1) : name },
+                        where: { name: (name.startsWith('#') ? name.substring(1) : name).toLowerCase() },
+                        defaults: { name: (name.startsWith('#') ? name.substring(1) : name).toLowerCase() },
                         transaction: t,
                     })
                 )
             );
             // hashtagInstances là một mảng [[instance, created], [instance, created]]
-            await newSong.setHashtags(hashtagInstances.map(h => h[0]), { transaction: t });
+            await song.setHashtags(hashtagInstances.map(h => h[0]), { transaction: t });
         }
 
         await t.commit();
-        res.status(201).json(newSong);
+        // Tải lại instance của bài hát để bao gồm các hashtags và creator đã được cập nhật trong response
+        await song.reload({ include: [{ model: User, as: 'creator', attributes: ['id', 'username', 'avatar_url'] }, { model: Hashtag }] });
+
+        res.status(200).json(formatSongResponse(song));
     } catch (error) {
         await t.rollback();
         res.status(500).json({ message: 'Server error', error: error.message });

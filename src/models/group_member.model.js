@@ -26,6 +26,11 @@ module.exports = (sequelize) => {
         key: 'id',
       },
     },
+    status: {
+      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+      allowNull: false,
+      defaultValue: 'pending',
+    },
   }, {
     tableName: 'group_members',
     timestamps: true,

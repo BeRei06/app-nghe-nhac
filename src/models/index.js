@@ -129,6 +129,9 @@ if (db.MusicGroup) {
 
     db.Post.hasMany(db.GroupPost, { foreignKey: 'post_id' });
     db.GroupPost.belongsTo(db.Post, { foreignKey: 'post_id' });
+
+    db.User.hasMany(db.GroupPost, { foreignKey: 'shared_by_user_id' });
+    db.GroupPost.belongsTo(db.User, { as: 'SharedBy', foreignKey: 'shared_by_user_id' });
 }
 
 // --- Define Associations for Sprint 5 ---
