@@ -1,5 +1,8 @@
 const { Song, User, Hashtag, sequelize } = require('../models');
 
+// Helper constant for common song associations to keep code DRY
+const songIncludeCreator = [{ model: User, as: 'creator', attributes: ['id', 'username', 'avatar_url'] }];
+
 // Helper function to format song response based on copyright status
 const formatSongResponse = (song) => {
     const songJson = song.toJSON();
@@ -16,7 +19,7 @@ exports.listSongs = async (req, res) => {
     try {
         const songs = await Song.findAll({
             where: { status: 'approved' },
-            include: [{ model: User, as: 'creator', attributes: ['id', 'username', 'avatar_url'] }]
+            include: songIncludeCreator
         });
         res.status(200).json(songs.map(formatSongResponse));
     } catch (error) {
@@ -28,7 +31,7 @@ exports.listSongs = async (req, res) => {
 exports.getSongById = async (req, res) => {
     try {
         const song = await Song.findByPk(req.params.id, {
-            include: [{ model: User, as: 'creator', attributes: ['id', 'username', 'avatar_url'] }]
+            include: songIncludeCreator
         });
         if (!song) {
             return res.status(404).json({ message: 'Song not found' });
@@ -87,7 +90,7 @@ exports.updateSong = async (req, res) => {
 
         await t.commit();
         // Tải lại instance của bài hát để bao gồm các hashtags và creator đã được cập nhật trong response
-        await song.reload({ include: [{ model: User, as: 'creator', attributes: ['id', 'username', 'avatar_url'] }, { model: Hashtag }] });
+        await song.reload({ include: [...songIncludeCreator, { model: Hashtag }] });
 
         res.status(200).json(formatSongResponse(song));
     } catch (error) {
