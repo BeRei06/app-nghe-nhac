@@ -1,73 +1,198 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { loginApi, registerApi, getMeApi } from '../api/auth.api';
-import { saveToken, saveUser, clearAuth, getToken, getUser } from '../utils/storage';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import client from '../api/client';
+import * as AuthAPI from '../api/auth.api'; // <-- Import các hàm API
+import { 
+  storeToken, 
+  getToken, 
+  removeToken, 
+  storeUser, 
+  getUser, 
+  removeUser 
+} from '../utils/storage'; // <-- Import các hàm tiện ích storage
+import { getTags, removeTags } from '../utils/storage';
 
-const AuthContext = createContext(null);
+// 1. Tạo Context
+const AuthContext = createContext();
 
-const initialState = {
-  user: null,
-  token: null,
-  loading: true,
-};
+// 2. Tạo Provider Component
+const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState({
+    token: null,
+    user: null,
+    tasteTags: [],
+    isAuthenticated: false,
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SET_AUTH':
-      return { ...state, user: action.user, token: action.token, loading: false };
-    case 'LOGOUT':
-      return { ...initialState, loading: false };
-    case 'SET_LOADING':
-      return { ...state, loading: action.loading };
-    default:
-      return state;
-  }
-}
-
-export function AuthProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
+  // Effect để load token từ storage khi app khởi động
   useEffect(() => {
-    (async () => {
-      const token = await getToken();
-      const user = await getUser();
-      if (token && user) {
-        dispatch({ type: 'SET_AUTH', user, token });
-      } else {
-        dispatch({ type: 'SET_LOADING', loading: false });
+    const loadAuthState = async () => {
+      try {
+        const token = await getToken();
+        const user = await getUser();
+        const tasteTags = await getTags();
+
+        if (token && user) {
+          client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          setAuthState({
+            token,
+            user,
+            tasteTags,
+            isAuthenticated: true,
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load auth state from storage", e);
+      } finally {
+        setIsLoading(false);
       }
-    })();
+    };
+
+    loadAuthState();
   }, []);
 
+  // Hàm đăng nhập
   const login = async (email, password) => {
-    const res = await loginApi({ email, password });
-    await saveToken(res.data.token);
-    await saveUser(res.data.user);
-    dispatch({ type: 'SET_AUTH', user: res.data.user, token: res.data.token });
+    try {
+      const response = await AuthAPI.login(email, password);
+      const payload = response?.success !== undefined ? response : response?.data || response;
+
+      if (!payload || payload.success !== true) {
+        const message = payload?.message || 'Email hoặc mật khẩu không đúng.';
+        throw new Error(message);
+      }
+
+      const { user, access_token: token, refresh_token: refreshToken } = payload.data || {};
+      if (!token || !user) {
+        throw new Error('Dữ liệu phản hồi không hợp lệ từ máy chủ.');
+      }
+
+      await storeToken(token);
+      await storeUser(user);
+      client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const tasteTags = await getTags();
+
+      setAuthState({
+        token,
+        user,
+        tasteTags,
+        isAuthenticated: true,
+      });
+
+      return { success: true };
+    } catch (error) {
+      const serverData = error.response?.data;
+      const serverMessage = serverData && typeof serverData === 'object' ? serverData.message : serverData;
+      const message = serverMessage || error.message || 'Có lỗi xảy ra, vui lòng thử lại.';
+      console.error('Login failed:', {
+        message,
+        status: error.response?.status,
+        data: error.response?.data,
+        original: error,
+      });
+      return { success: false, error: message };
+    }
   };
 
-  const register = async (name, email, password) => {
-    const res = await registerApi({ name, email, password });
-    await saveToken(res.data.token);
-    await saveUser(res.data.user);
-    dispatch({ type: 'SET_AUTH', user: res.data.user, token: res.data.token });
+  // Hàm đăng ký
+  const register = async (userData) => {
+    try {
+      const response = await AuthAPI.register(userData);
+      const payload = response?.success !== undefined ? response : response?.data || response;
+
+      if (!payload || payload.success !== true) {
+        throw new Error(payload?.message || 'Đăng ký thất bại.');
+      }
+
+      return { success: true, data: payload.data };
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || 'Có lỗi xảy ra, vui lòng thử lại.';
+      console.error('Registration failed:', {
+        message,
+        status: error.status ?? error.response?.status,
+        data: error.serverData ?? error.response?.data,
+        originalError: error,
+      });
+      return { success: false, error: message };
+    }
   };
 
+  const verifyEmail = async (email, code) => {
+    const response = await AuthAPI.verifyEmail(email, code);
+    const payload = response?.success !== undefined ? response : response?.data || response;
+    if (!payload?.success) {
+      throw new Error(payload?.message || 'Không thể xác thực email.');
+    }
+    return payload;
+  };
+
+  const resendVerificationEmail = async (email) => {
+    const response = await AuthAPI.resendVerificationEmail(email);
+    const payload = response?.success !== undefined ? response : response?.data || response;
+    if (!payload?.success) {
+      throw new Error(payload?.message || 'Không thể gửi lại mã xác thực.');
+    }
+    return payload;
+  };
+
+
+  // Hàm đăng xuất
   const logout = async () => {
-    await clearAuth();
-    dispatch({ type: 'LOGOUT' });
+    try {
+      await removeToken();
+      await removeUser();
+      await removeTags();
+
+      delete client.defaults.headers.common['Authorization'];
+
+      setAuthState({
+        token: null,
+        user: null,
+        tasteTags: [],
+        isAuthenticated: false,
+      });
+    } catch (e) {
+      console.error("Failed to logout", e);
+    }
   };
 
-  const refreshUser = async () => {
-    const res = await getMeApi();
-    await saveUser(res.data.user);
-    dispatch({ type: 'SET_AUTH', user: res.data.user, token: state.token });
+  const updateUser = async (updates) => {
+    const nextUser = { ...authState.user, ...updates };
+    const nextTasteTags = updates.tasteTags || authState.tasteTags;
+    await storeUser(nextUser);
+    setAuthState((current) => ({
+      ...current,
+      user: nextUser,
+      tasteTags: nextTasteTags,
+    }));
+  };
+
+  const value = {
+    ...authState,
+    isLoading,
+    login,
+    logout,
+    register,
+    updateUser,
+    loading: isLoading,
+    verifyEmail,
+    resendVerificationEmail,
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export const useAuth = () => useContext(AuthContext);
+// 3. Tạo Custom Hook để sử dụng Context
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export { AuthProvider, useAuth };

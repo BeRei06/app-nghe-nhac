@@ -1,28 +1,15 @@
 import Constants from 'expo-constants';
 
-const PRODUCTION_API_URL = 'https://your-production-api.com/api';
-const BACKEND_PORT = 3000;
+// IMPORTANT: Replace the IP below with your machine's local IP where the backend runs.
+// Using 'localhost' won't work on a real mobile device. On Windows use `ipconfig` to find it.
 
-// Đặt IP WiFi của máy chạy BE ở đây (dùng khi --tunnel hoặc hostUri không phải LAN IP)
-const DEV_MACHINE_IP = '192.168.0.53';
+const defaultApiBase = 'http://192.168.0.180:3000/api'; // <-- update this to your backend IP:PORT (dev IP is 192.168.0.180)
+const extraApiBase = Constants.expoConfig?.extra?.apiBaseUrl || Constants.manifest?.extra?.apiBaseUrl || Constants.manifest?.extra?.API_BASE_URL;
 
-function resolveApiUrl() {
-  if (!__DEV__) {
-    return PRODUCTION_API_URL;
-  }
+// On web, prefer configured value over same-host fallback so the app does not accidentally call the local dev server origin.
+export const API_BASE_URL = extraApiBase || defaultApiBase;
 
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) {
-    const host = hostUri.split(':')[0];
-    // Chỉ dùng host từ hostUri nếu trông như IPv4 (ví dụ: 192.168.x.x)
-    const isLanIp = /^\d+\.\d+\.\d+\.\d+$/.test(host);
-    if (isLanIp) {
-      return `http://${host}:${BACKEND_PORT}/api`;
-    }
-  }
-
-  // Fallback: dùng IP WiFi cố định (tunnel mode hoặc Docker host)
-  return `http://${DEV_MACHINE_IP}:${BACKEND_PORT}/api`;
-}
-
-export const API_BASE_URL = resolveApiUrl();
+// For convenience, also provide default export with same property for legacy imports
+export default {
+  API_BASE_URL,
+};
