@@ -1,0 +1,325 @@
+// ==========================================
+// 1. NGƯỜI DÙNG, XÁC THỰC & PHÂN QUYỀN (RBAC)
+// ==========================================
+Table users {
+  id integer [primary key]
+  username varchar(100) [unique, not null]
+  email varchar(255) [unique, null]
+  phone_number varchar(20) [unique, null]
+  password_hash varchar(255) 
+  auth_provider varchar(50) [note: 'email, phone, google, apple']
+  avatar_url text 
+  bio text
+  strike_count integer [default: 0, note: 'Số gậy bản quyền, >=3 sẽ bị khóa']
+  theme_preference varchar(20) [default: 'dark']
+  status varchar(20) [default: 'active', note: 'active, suspended, deleted']
+  deleted_at timestamp [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table roles {
+  id integer [primary key]
+  name varchar(50) [unique, not null, note: 'super_admin, content_mod, user, creator']
+  description text
+}
+
+Table permissions {
+  id integer [primary key]
+  name varchar(100) [unique, not null, note: 'ban_user, delete_song, approve_music, view_audit_logs']
+}
+
+Table role_permissions {
+  role_id integer [primary key]
+  permission_id integer [primary key]
+}
+
+Table user_roles {
+  user_id integer [primary key]
+  role_id integer [primary key]
+}
+
+Table user_sessions {
+  id integer [primary key]
+  user_id integer [not null]
+  refresh_token varchar(500) [unique, not null]
+  device_id varchar(255) 
+  is_revoked boolean [default: false]
+  expires_at timestamp [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 2. NHẬT KÝ QUẢN TRỊ (ADMIN AUDIT LOGS)
+// ==========================================
+Table admin_audit_logs {
+  id integer [primary key]
+  admin_id integer [not null]
+  action varchar(100) [note: 'ban_user, approve_song, reject_copyright_dispute, delete_group']
+  target_type varchar(50) [note: 'users, songs, posts, music_groups']
+  target_id integer [not null]
+  reason text
+  ip_address varchar(45)
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 3. ÂM NHẠC & BẢN QUYỀN (SOUNDCLOUD STYLE)
+// ==========================================
+Table songs {
+  id integer [primary key]
+  title varchar(255) [not null]
+  hls_streaming_url text [not null]
+  duration integer
+  creator_id integer [not null]
+  genre_id integer
+  lyrics_timestamp text
+  
+  // Trạng thái vận hành & kiểm duyệt
+  status varchar(20) [default: 'pending', note: 'pending, approved, rejected, flagged']
+  
+  // Trạng thái bản quyền (AcoustID / Manual)
+  copyright_status varchar(20) [default: 'unverified', note: 'clean, matched, flagged, disputed']
+  external_song_title varchar(255) [note: 'Tên gốc từ AcoustID']
+  external_artist_name varchar(255) [note: 'Nghệ sĩ gốc từ AcoustID']
+  external_buy_link text [note: 'Link mua nhạc gốc (Spotify/iTunes) - Giống SoundCloud']
+  match_score float [default: 0, note: 'Điểm số khớp từ 0.0 đến 1.0']
+  
+  // Kiếm tiền (Sẵn sàng cho tương lai)
+  is_eligible_for_monetization boolean [default: true, note: 'Tự động set false nếu vi phạm bản quyền']
+  
+  deleted_at timestamp [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table audio_fingerprints {
+  song_id integer [primary key]
+  // Checksum (Giai đoạn 2 - 0đ)
+  file_hash_sha256 varchar(64) [unique, note: 'Dùng để chặn upload file trùng lặp']
+  file_hash_md5 varchar(32) [unique]
+  
+  // Fingerprinting (Giai đoạn 3 - Chromaprint/AcoustID)
+  fingerprint_code text [note: 'Dấu vân tay âm thanh Chromaprint']
+  acoustid_id uuid [note: 'ID định danh trên hệ thống quốc tế AcoustID']
+  
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table copyright_blacklist {
+  id integer [primary key]
+  file_hash_sha256 varchar(64) [unique, not null]
+  original_song_title varchar(255)
+  reason text
+  added_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table copyright_disputes {
+  id integer [primary key]
+  song_id integer [not null]
+  reporter_id integer [not null]
+  evidence_url text [note: 'Link bằng chứng sở hữu']
+  reason text
+  status varchar(20) [default: 'pending', note: 'pending, resolved, rejected']
+  admin_note text
+  resolved_at timestamp
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table hashtags {
+  id integer [primary key]
+  name varchar(100) [unique, not null]
+}
+
+Table song_hashtags {
+  song_id integer [primary key]
+  hashtag_id integer [primary key]
+}
+
+// ==========================================
+// 4. MẠNG XÃ HỘI & SNIPPET FEED
+// ==========================================
+Table posts {
+  id integer [primary key]
+  user_id integer [not null]
+  song_id integer [not null]
+  caption text
+  start_time integer [note: 'Giây bắt đầu Snippet']
+  end_time integer [note: 'Giây kết thúc Snippet']
+  privacy_level varchar(20) [default: 'public']
+  status varchar(20) [default: 'active', note: 'active, hidden, flagged']
+  deleted_at timestamp [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table post_reactions {
+  post_id integer [primary key]
+  user_id integer [primary key]
+  reaction_type varchar(50) [default: 'like']
+}
+
+Table post_hashtags {
+  post_id integer [primary key]
+  hashtag_id integer [primary key]
+}
+
+Table feed_recommendations {
+  user_id integer [primary key]
+  recommended_post_ids text [note: 'JSON array lưu ID bài đăng đã gợi ý']
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 5. CỘNG ĐỒNG "CÂM" (NO-CHAT GROUPS)
+// ==========================================
+Table music_groups {
+  id integer [primary key]
+  name varchar(255) [not null]
+  description text
+  creator_id integer [not null]
+  status varchar(20) [default: 'active']
+  deleted_at timestamp [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table group_roles {
+  id integer [primary key]
+  group_id integer [not null]
+  name varchar(50) [not null]
+  permissions_json text [note: 'Quyền nội bộ group: duyệt bài, xóa bài...']
+}
+
+Table group_members {
+  group_id integer [primary key]
+  user_id integer [primary key]
+  group_role_id integer [not null]
+  joined_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table group_posts {
+  group_id integer [primary key]
+  post_id integer [primary key]
+  shared_by integer [not null]
+  shared_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 6. THƯ VIỆN, ANALYTICS & OFFLINE
+// ==========================================
+Table playlists {
+  id integer [primary key]
+  user_id integer [not null]
+  name varchar(255) [not null]
+  is_private boolean [default: false]
+  deleted_at timestamp [null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table playlist_songs {
+  playlist_id integer [primary key]
+  song_id integer [primary key]
+  added_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table user_downloads {
+  user_id integer [primary key]
+  song_id integer [primary key]
+  downloaded_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table user_listening_details {
+  id integer [primary key]
+  user_id integer [not null]
+  song_id integer [not null]
+  duration_listened integer 
+  completion_rate float 
+  is_skipped boolean [default: false]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 7. HỆ THỐNG & KIỂM DUYỆT
+// ==========================================
+Table reports {
+  id integer [primary key]
+  reporter_id integer [not null]
+  target_type varchar(50) [note: 'song, post, group, user']
+  target_id integer [not null]
+  reason text [not null]
+  status varchar(20) [default: 'pending', note: 'pending, resolved, dismissed']
+  admin_id integer [null, note: 'Admin tiếp nhận xử lý']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table notifications {
+  id integer [primary key]
+  user_id integer [not null]
+  sender_id integer 
+  type varchar(50) 
+  title varchar(255)
+  content text
+  is_read boolean [default: false]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table search_history {
+  id integer [primary key]
+  user_id integer [not null]
+  search_query text [not null]
+  searched_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// --- QUẢN LÝ VĂN BẢN PHÁP LÝ ---
+Table legal_documents {
+  id integer [primary key]
+  type varchar(50) [note: 'terms_of_use, privacy_policy, copyright_policy']
+  version varchar(20) [note: 'v1.0, v1.1...']
+  content_url text [note: 'Link đến file quy định hoặc nội dung text']
+  is_active boolean [default: true]
+  effective_at timestamp [note: 'Ngày bắt đầu có hiệu lực']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// --- LƯU VẾT CHẤP THUẬN CỦA NGƯỜI DÙNG ---
+Table user_consents {
+  id integer [primary key]
+  user_id integer [not null]
+  document_id integer [not null]
+  accepted_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+// ==========================================
+// 8. LIÊN KẾT KHÓA NGOẠI (FOREIGN KEYS)
+// ==========================================
+Ref: admin_audit_logs.admin_id > users.id
+Ref: role_permissions.role_id > roles.id
+Ref: role_permissions.permission_id > permissions.id
+Ref: user_roles.user_id > users.id
+Ref: user_roles.role_id > roles.id
+Ref: user_sessions.user_id > users.id
+
+Ref: songs.creator_id > users.id
+Ref: audio_fingerprints.song_id > songs.id
+Ref: copyright_disputes.song_id > songs.id
+Ref: copyright_disputes.reporter_id > users.id
+
+Ref: posts.user_id > users.id
+Ref: posts.song_id > songs.id
+Ref: post_reactions.post_id > posts.id
+
+Ref: music_groups.creator_id > users.id
+Ref: group_roles.group_id > music_groups.id
+Ref: group_members.group_id > music_groups.id
+Ref: group_members.user_id > users.id
+Ref: group_members.group_role_id > group_roles.id
+Ref: group_posts.group_id > music_groups.id
+
+Ref: playlists.user_id > users.id
+Ref: playlist_songs.playlist_id > playlists.id
+
+Ref: user_downloads.user_id > users.id
+Ref: user_downloads.song_id > songs.id
+
+Ref: reports.reporter_id > users.id
+Ref: reports.admin_id > users.id
+
+Ref: user_consents.user_id > users.id
+Ref: user_consents.document_id > legal_documents.id

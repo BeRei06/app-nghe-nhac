@@ -1,0 +1,1305 @@
+-- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: lt_web
+-- ------------------------------------------------------
+-- Server version	8.0.46
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `admin_audit_logs`
+--
+
+DROP TABLE IF EXISTS `admin_audit_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin_audit_logs` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `admin_id` int NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `target_entity_type` varchar(50) DEFAULT NULL,
+  `target_entity_id` int DEFAULT NULL,
+  `details` json DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `admin_audit_logs_admin_id` (`admin_id`),
+  CONSTRAINT `admin_audit_logs_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `admin_audit_logs`
+--
+
+LOCK TABLES `admin_audit_logs` WRITE;
+/*!40000 ALTER TABLE `admin_audit_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `admin_audit_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `artists`
+--
+
+DROP TABLE IF EXISTS `artists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `artists` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `avatar_url` text,
+  `bio` text,
+  `website` text,
+  `is_verified` tinyint(1) DEFAULT '0',
+  `follower_count` int DEFAULT '0',
+  `deleted_at` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `slug_2` (`slug`),
+  UNIQUE KEY `slug_3` (`slug`),
+  UNIQUE KEY `slug_4` (`slug`),
+  UNIQUE KEY `slug_5` (`slug`),
+  UNIQUE KEY `slug_6` (`slug`),
+  UNIQUE KEY `slug_7` (`slug`),
+  UNIQUE KEY `slug_8` (`slug`),
+  UNIQUE KEY `slug_9` (`slug`),
+  UNIQUE KEY `slug_10` (`slug`),
+  UNIQUE KEY `slug_11` (`slug`),
+  UNIQUE KEY `slug_12` (`slug`),
+  UNIQUE KEY `slug_13` (`slug`),
+  UNIQUE KEY `slug_14` (`slug`),
+  UNIQUE KEY `slug_15` (`slug`),
+  UNIQUE KEY `slug_16` (`slug`),
+  UNIQUE KEY `slug_17` (`slug`),
+  UNIQUE KEY `slug_18` (`slug`),
+  UNIQUE KEY `slug_19` (`slug`),
+  UNIQUE KEY `slug_20` (`slug`),
+  UNIQUE KEY `slug_21` (`slug`),
+  UNIQUE KEY `slug_22` (`slug`),
+  UNIQUE KEY `slug_23` (`slug`),
+  UNIQUE KEY `slug_24` (`slug`),
+  UNIQUE KEY `slug_25` (`slug`),
+  UNIQUE KEY `slug_26` (`slug`),
+  UNIQUE KEY `slug_27` (`slug`),
+  UNIQUE KEY `slug_28` (`slug`),
+  UNIQUE KEY `slug_29` (`slug`),
+  UNIQUE KEY `slug_30` (`slug`),
+  UNIQUE KEY `slug_31` (`slug`),
+  UNIQUE KEY `slug_32` (`slug`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `artists`
+--
+
+LOCK TABLES `artists` WRITE;
+/*!40000 ALTER TABLE `artists` DISABLE KEYS */;
+INSERT INTO `artists` VALUES (1,'Unknown Artist','unknown-artist',NULL,NULL,NULL,0,0,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(2,'Sơn Tùng M-TP','son-tung-m-tp',NULL,NULL,NULL,0,12000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(3,'Đen Vâu','den-vau',NULL,NULL,NULL,0,9000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(4,'Hieuthuhai','hieuthuhai',NULL,NULL,NULL,0,8000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(5,'MCK','mck',NULL,NULL,NULL,0,7000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(6,'Vũ','vu',NULL,NULL,NULL,0,6500000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(7,'Erik','erik',NULL,NULL,NULL,0,6000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(8,'Bích Phương','bich-phuong',NULL,NULL,NULL,0,5500000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(9,'Lệ Quyên','le-quyen',NULL,NULL,NULL,0,5000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(10,'Min','min',NULL,NULL,NULL,0,4500000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(11,'Taylor Swift','taylor-swift',NULL,NULL,NULL,0,250000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(12,'Billie Eilish','billie-eilish',NULL,NULL,NULL,0,200000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(13,'The Weeknd','the-weeknd',NULL,NULL,NULL,0,180000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(14,'Drake','drake',NULL,NULL,NULL,0,170000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(15,'Ed Sheeran','ed-sheeran',NULL,NULL,NULL,0,165000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(16,'Adele','adele',NULL,NULL,NULL,0,160000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(17,'Dua Lipa','dua-lipa',NULL,NULL,NULL,0,155000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(18,'Olivia Rodrigo','olivia-rodrigo',NULL,NULL,NULL,0,150000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(19,'Harry Styles','harry-styles',NULL,NULL,NULL,0,145000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(20,'Bruno Mars','bruno-mars',NULL,NULL,NULL,0,140000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(21,'Post Malone','post-malone',NULL,NULL,NULL,0,135000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(22,'SZA','sza',NULL,NULL,NULL,0,130000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(23,'Justin Bieber','justin-bieber',NULL,NULL,NULL,0,125000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(24,'Beyoncé','beyonce',NULL,NULL,NULL,0,120000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(25,'Rihanna','rihanna',NULL,NULL,NULL,0,115000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(26,'Coldplay','coldplay',NULL,NULL,NULL,0,110000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(27,'Imagine Dragons','imagine-dragons',NULL,NULL,NULL,0,105000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(28,'The Beatles','the-beatles',NULL,NULL,NULL,0,100000000,NULL,'2026-07-21 04:15:00','2026-07-21 04:15:00'),(29,'01%20Solar%20Coast','0120solar20coast',NULL,NULL,NULL,0,0,NULL,'2026-07-21 04:22:19','2026-07-21 04:22:19');
+/*!40000 ALTER TABLE `artists` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `audio_fingerprints`
+--
+
+DROP TABLE IF EXISTS `audio_fingerprints`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `audio_fingerprints` (
+  `song_id` int NOT NULL,
+  `file_hash_sha256` varchar(64) DEFAULT NULL,
+  `file_hash_md5` varchar(32) DEFAULT NULL,
+  `fingerprint_code` text,
+  `acoustid_id` varchar(36) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`song_id`),
+  UNIQUE KEY `file_hash_sha256` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_2` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_2` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_3` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_3` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_4` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_4` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_5` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_5` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_6` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_6` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_7` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_7` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_8` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_8` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_9` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_9` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_10` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_10` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_11` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_11` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_12` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_12` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_13` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_13` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_14` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_14` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_15` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_15` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_16` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_16` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_17` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_17` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_18` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_18` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_19` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_19` (`file_hash_md5`),
+  UNIQUE KEY `file_hash_sha256_20` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_md5_20` (`file_hash_md5`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `audio_fingerprints`
+--
+
+LOCK TABLES `audio_fingerprints` WRITE;
+/*!40000 ALTER TABLE `audio_fingerprints` DISABLE KEYS */;
+/*!40000 ALTER TABLE `audio_fingerprints` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `copyright_blacklist`
+--
+
+DROP TABLE IF EXISTS `copyright_blacklist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `copyright_blacklist` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `file_hash_sha256` varchar(64) NOT NULL,
+  `original_song_title` varchar(255) DEFAULT NULL,
+  `reason` text,
+  `added_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `file_hash_sha256` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_2` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_3` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_4` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_5` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_6` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_7` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_8` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_9` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_10` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_11` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_12` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_13` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_14` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_15` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_16` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_17` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_18` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_19` (`file_hash_sha256`),
+  UNIQUE KEY `file_hash_sha256_20` (`file_hash_sha256`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `copyright_blacklist`
+--
+
+LOCK TABLES `copyright_blacklist` WRITE;
+/*!40000 ALTER TABLE `copyright_blacklist` DISABLE KEYS */;
+/*!40000 ALTER TABLE `copyright_blacklist` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `copyright_disputes`
+--
+
+DROP TABLE IF EXISTS `copyright_disputes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `copyright_disputes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `song_id` int NOT NULL,
+  `disputer_id` int NOT NULL,
+  `reason` text NOT NULL,
+  `status` varchar(20) DEFAULT 'pending',
+  `admin_id` int DEFAULT NULL,
+  `resolved_at` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `song_id` (`song_id`),
+  KEY `disputer_id` (`disputer_id`),
+  KEY `admin_id` (`admin_id`),
+  CONSTRAINT `copyright_disputes_ibfk_133` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`),
+  CONSTRAINT `copyright_disputes_ibfk_134` FOREIGN KEY (`disputer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `copyright_disputes_ibfk_135` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `copyright_disputes`
+--
+
+LOCK TABLES `copyright_disputes` WRITE;
+/*!40000 ALTER TABLE `copyright_disputes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `copyright_disputes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `feed_recommendations`
+--
+
+DROP TABLE IF EXISTS `feed_recommendations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `feed_recommendations` (
+  `user_id` int NOT NULL,
+  `recommended_post_ids` json NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `feed_recommendations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `feed_recommendations`
+--
+
+LOCK TABLES `feed_recommendations` WRITE;
+/*!40000 ALTER TABLE `feed_recommendations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `feed_recommendations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `genres`
+--
+
+DROP TABLE IF EXISTS `genres`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `genres` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `description` text,
+  `sort_order` int DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
+  `deleted_at` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `slug` (`slug`),
+  UNIQUE KEY `name_2` (`name`),
+  UNIQUE KEY `slug_2` (`slug`),
+  UNIQUE KEY `name_3` (`name`),
+  UNIQUE KEY `slug_3` (`slug`),
+  UNIQUE KEY `name_4` (`name`),
+  UNIQUE KEY `slug_4` (`slug`),
+  UNIQUE KEY `name_5` (`name`),
+  UNIQUE KEY `slug_5` (`slug`),
+  UNIQUE KEY `name_6` (`name`),
+  UNIQUE KEY `slug_6` (`slug`),
+  UNIQUE KEY `name_7` (`name`),
+  UNIQUE KEY `slug_7` (`slug`),
+  UNIQUE KEY `name_8` (`name`),
+  UNIQUE KEY `slug_8` (`slug`),
+  UNIQUE KEY `name_9` (`name`),
+  UNIQUE KEY `slug_9` (`slug`),
+  UNIQUE KEY `name_10` (`name`),
+  UNIQUE KEY `slug_10` (`slug`),
+  UNIQUE KEY `name_11` (`name`),
+  UNIQUE KEY `slug_11` (`slug`),
+  UNIQUE KEY `name_12` (`name`),
+  UNIQUE KEY `slug_12` (`slug`),
+  UNIQUE KEY `name_13` (`name`),
+  UNIQUE KEY `slug_13` (`slug`),
+  UNIQUE KEY `name_14` (`name`),
+  UNIQUE KEY `slug_14` (`slug`),
+  UNIQUE KEY `name_15` (`name`),
+  UNIQUE KEY `slug_15` (`slug`),
+  UNIQUE KEY `name_16` (`name`),
+  UNIQUE KEY `slug_16` (`slug`),
+  UNIQUE KEY `name_17` (`name`),
+  UNIQUE KEY `slug_17` (`slug`),
+  UNIQUE KEY `name_18` (`name`),
+  UNIQUE KEY `slug_18` (`slug`),
+  UNIQUE KEY `name_19` (`name`),
+  UNIQUE KEY `slug_19` (`slug`),
+  UNIQUE KEY `name_20` (`name`),
+  UNIQUE KEY `slug_20` (`slug`),
+  UNIQUE KEY `name_21` (`name`),
+  UNIQUE KEY `slug_21` (`slug`),
+  UNIQUE KEY `name_22` (`name`),
+  UNIQUE KEY `slug_22` (`slug`),
+  UNIQUE KEY `name_23` (`name`),
+  UNIQUE KEY `slug_23` (`slug`),
+  UNIQUE KEY `name_24` (`name`),
+  UNIQUE KEY `slug_24` (`slug`),
+  UNIQUE KEY `name_25` (`name`),
+  UNIQUE KEY `slug_25` (`slug`),
+  UNIQUE KEY `name_26` (`name`),
+  UNIQUE KEY `slug_26` (`slug`),
+  UNIQUE KEY `name_27` (`name`),
+  UNIQUE KEY `slug_27` (`slug`),
+  UNIQUE KEY `name_28` (`name`),
+  UNIQUE KEY `slug_28` (`slug`),
+  UNIQUE KEY `name_29` (`name`),
+  UNIQUE KEY `slug_29` (`slug`),
+  UNIQUE KEY `name_30` (`name`),
+  UNIQUE KEY `slug_30` (`slug`),
+  UNIQUE KEY `name_31` (`name`),
+  UNIQUE KEY `slug_31` (`slug`),
+  UNIQUE KEY `name_32` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `genres`
+--
+
+LOCK TABLES `genres` WRITE;
+/*!40000 ALTER TABLE `genres` DISABLE KEYS */;
+INSERT INTO `genres` VALUES (1,'Pop','pop',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(2,'Rock','rock',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(3,'Hip Hop','hip-hop',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(4,'EDM','edm',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(5,'R&B','rnb',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34'),(6,'Indie','indie',NULL,0,1,NULL,'2026-07-21 03:50:34','2026-07-21 03:50:34');
+/*!40000 ALTER TABLE `genres` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `group_members`
+--
+
+DROP TABLE IF EXISTS `group_members`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `group_members` (
+  `group_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `role_id` int NOT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`group_id`,`user_id`),
+  UNIQUE KEY `group_members_user_id_group_id_unique` (`group_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `group_members_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `music_groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `group_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `group_members_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `group_roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `group_members`
+--
+
+LOCK TABLES `group_members` WRITE;
+/*!40000 ALTER TABLE `group_members` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_members` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `group_posts`
+--
+
+DROP TABLE IF EXISTS `group_posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `group_posts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `post_id` int NOT NULL,
+  `shared_by_user_id` int NOT NULL,
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`),
+  KEY `post_id` (`post_id`),
+  KEY `shared_by_user_id` (`shared_by_user_id`),
+  CONSTRAINT `group_posts_ibfk_133` FOREIGN KEY (`group_id`) REFERENCES `music_groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `group_posts_ibfk_134` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `group_posts_ibfk_135` FOREIGN KEY (`shared_by_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `group_posts`
+--
+
+LOCK TABLES `group_posts` WRITE;
+/*!40000 ALTER TABLE `group_posts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_posts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `group_roles`
+--
+
+DROP TABLE IF EXISTS `group_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `group_roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` enum('owner','admin','moderator','member') NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `name_2` (`name`),
+  UNIQUE KEY `name_3` (`name`),
+  UNIQUE KEY `name_4` (`name`),
+  UNIQUE KEY `name_5` (`name`),
+  UNIQUE KEY `name_6` (`name`),
+  UNIQUE KEY `name_7` (`name`),
+  UNIQUE KEY `name_8` (`name`),
+  UNIQUE KEY `name_9` (`name`),
+  UNIQUE KEY `name_10` (`name`),
+  UNIQUE KEY `name_11` (`name`),
+  UNIQUE KEY `name_12` (`name`),
+  UNIQUE KEY `name_13` (`name`),
+  UNIQUE KEY `name_14` (`name`),
+  UNIQUE KEY `name_15` (`name`),
+  UNIQUE KEY `name_16` (`name`),
+  UNIQUE KEY `name_17` (`name`),
+  UNIQUE KEY `name_18` (`name`),
+  UNIQUE KEY `name_19` (`name`),
+  UNIQUE KEY `name_20` (`name`),
+  UNIQUE KEY `name_21` (`name`),
+  UNIQUE KEY `name_22` (`name`),
+  UNIQUE KEY `name_23` (`name`),
+  UNIQUE KEY `name_24` (`name`),
+  UNIQUE KEY `name_25` (`name`),
+  UNIQUE KEY `name_26` (`name`),
+  UNIQUE KEY `name_27` (`name`),
+  UNIQUE KEY `name_28` (`name`),
+  UNIQUE KEY `name_29` (`name`),
+  UNIQUE KEY `name_30` (`name`),
+  UNIQUE KEY `name_31` (`name`),
+  UNIQUE KEY `name_32` (`name`),
+  UNIQUE KEY `name_33` (`name`),
+  UNIQUE KEY `name_34` (`name`),
+  UNIQUE KEY `name_35` (`name`),
+  UNIQUE KEY `name_36` (`name`),
+  UNIQUE KEY `name_37` (`name`),
+  UNIQUE KEY `name_38` (`name`),
+  UNIQUE KEY `name_39` (`name`),
+  UNIQUE KEY `name_40` (`name`),
+  UNIQUE KEY `name_41` (`name`),
+  UNIQUE KEY `name_42` (`name`),
+  UNIQUE KEY `name_43` (`name`),
+  UNIQUE KEY `name_44` (`name`),
+  UNIQUE KEY `name_45` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `group_roles`
+--
+
+LOCK TABLES `group_roles` WRITE;
+/*!40000 ALTER TABLE `group_roles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hashtags`
+--
+
+DROP TABLE IF EXISTS `hashtags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hashtags` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `name_2` (`name`),
+  UNIQUE KEY `name_3` (`name`),
+  UNIQUE KEY `name_4` (`name`),
+  UNIQUE KEY `name_5` (`name`),
+  UNIQUE KEY `name_6` (`name`),
+  UNIQUE KEY `name_7` (`name`),
+  UNIQUE KEY `name_8` (`name`),
+  UNIQUE KEY `name_9` (`name`),
+  UNIQUE KEY `name_10` (`name`),
+  UNIQUE KEY `name_11` (`name`),
+  UNIQUE KEY `name_12` (`name`),
+  UNIQUE KEY `name_13` (`name`),
+  UNIQUE KEY `name_14` (`name`),
+  UNIQUE KEY `name_15` (`name`),
+  UNIQUE KEY `name_16` (`name`),
+  UNIQUE KEY `name_17` (`name`),
+  UNIQUE KEY `name_18` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hashtags`
+--
+
+LOCK TABLES `hashtags` WRITE;
+/*!40000 ALTER TABLE `hashtags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hashtags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `legal_documents`
+--
+
+DROP TABLE IF EXISTS `legal_documents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `legal_documents` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `version` varchar(20) NOT NULL,
+  `effective_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `content_url` text,
+  `is_active` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `legal_documents`
+--
+
+LOCK TABLES `legal_documents` WRITE;
+/*!40000 ALTER TABLE `legal_documents` DISABLE KEYS */;
+INSERT INTO `legal_documents` VALUES (1,'v1.0','2026-01-01 00:00:00','2026-07-15 04:10:57','terms_of_use','http://example.com/terms',1);
+/*!40000 ALTER TABLE `legal_documents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mail_configs`
+--
+
+DROP TABLE IF EXISTS `mail_configs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mail_configs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `auth_type` enum('smtp','oauth2','graph') DEFAULT 'smtp',
+  `host` varchar(255) DEFAULT NULL,
+  `port` int DEFAULT NULL,
+  `secure` tinyint(1) DEFAULT '1',
+  `user` varchar(255) DEFAULT NULL,
+  `pass` text,
+  `tenant_id` varchar(255) DEFAULT NULL,
+  `client_id` varchar(255) DEFAULT NULL,
+  `client_secret` text,
+  `from_email` varchar(255) DEFAULT NULL,
+  `from_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mail_configs`
+--
+
+LOCK TABLES `mail_configs` WRITE;
+/*!40000 ALTER TABLE `mail_configs` DISABLE KEYS */;
+INSERT INTO `mail_configs` VALUES (1,'smtp','smtp.gmail.com',587,0,'thebui2k@gmail.com','HUAKg5SDk+Vdgb4s2YobTA==:qYHAOgQvOfRrztc7TZpRzoejGlQCwI3HMR0sjcvtUQE=',NULL,NULL,NULL,'thebui2k@gmail.com','VibeShare');
+/*!40000 ALTER TABLE `mail_configs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `music_groups`
+--
+
+DROP TABLE IF EXISTS `music_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `music_groups` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  `created_by` int NOT NULL,
+  `is_private` tinyint(1) DEFAULT '0',
+  `cover_image_url` text,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `name_2` (`name`),
+  UNIQUE KEY `name_3` (`name`),
+  UNIQUE KEY `name_4` (`name`),
+  UNIQUE KEY `name_5` (`name`),
+  UNIQUE KEY `name_6` (`name`),
+  UNIQUE KEY `name_7` (`name`),
+  UNIQUE KEY `name_8` (`name`),
+  UNIQUE KEY `name_9` (`name`),
+  UNIQUE KEY `name_10` (`name`),
+  UNIQUE KEY `name_11` (`name`),
+  UNIQUE KEY `name_12` (`name`),
+  UNIQUE KEY `name_13` (`name`),
+  UNIQUE KEY `name_14` (`name`),
+  UNIQUE KEY `name_15` (`name`),
+  UNIQUE KEY `name_16` (`name`),
+  UNIQUE KEY `name_17` (`name`),
+  UNIQUE KEY `name_18` (`name`),
+  UNIQUE KEY `name_19` (`name`),
+  UNIQUE KEY `name_20` (`name`),
+  UNIQUE KEY `name_21` (`name`),
+  UNIQUE KEY `name_22` (`name`),
+  UNIQUE KEY `name_23` (`name`),
+  UNIQUE KEY `name_24` (`name`),
+  UNIQUE KEY `name_25` (`name`),
+  UNIQUE KEY `name_26` (`name`),
+  UNIQUE KEY `name_27` (`name`),
+  UNIQUE KEY `name_28` (`name`),
+  UNIQUE KEY `name_29` (`name`),
+  UNIQUE KEY `name_30` (`name`),
+  UNIQUE KEY `name_31` (`name`),
+  UNIQUE KEY `name_32` (`name`),
+  UNIQUE KEY `name_33` (`name`),
+  UNIQUE KEY `name_34` (`name`),
+  UNIQUE KEY `name_35` (`name`),
+  UNIQUE KEY `name_36` (`name`),
+  UNIQUE KEY `name_37` (`name`),
+  UNIQUE KEY `name_38` (`name`),
+  UNIQUE KEY `name_39` (`name`),
+  UNIQUE KEY `name_40` (`name`),
+  UNIQUE KEY `name_41` (`name`),
+  UNIQUE KEY `name_42` (`name`),
+  UNIQUE KEY `name_43` (`name`),
+  UNIQUE KEY `name_44` (`name`),
+  UNIQUE KEY `name_45` (`name`),
+  KEY `created_by` (`created_by`),
+  CONSTRAINT `music_groups_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `music_groups`
+--
+
+LOCK TABLES `music_groups` WRITE;
+/*!40000 ALTER TABLE `music_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `music_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `content` text NOT NULL,
+  `reference_id` int DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notifications_user_id` (`user_id`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifications`
+--
+
+LOCK TABLES `notifications` WRITE;
+/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `playlist_songs`
+--
+
+DROP TABLE IF EXISTS `playlist_songs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `playlist_songs` (
+  `playlist_id` int NOT NULL,
+  `song_id` int NOT NULL,
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`playlist_id`,`song_id`),
+  UNIQUE KEY `playlist_songs_song_id_playlist_id_unique` (`playlist_id`,`song_id`),
+  KEY `song_id` (`song_id`),
+  CONSTRAINT `playlist_songs_ibfk_1` FOREIGN KEY (`playlist_id`) REFERENCES `playlists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `playlist_songs_ibfk_2` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `playlist_songs`
+--
+
+LOCK TABLES `playlist_songs` WRITE;
+/*!40000 ALTER TABLE `playlist_songs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `playlist_songs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `playlists`
+--
+
+DROP TABLE IF EXISTS `playlists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `playlists` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `is_private` tinyint(1) DEFAULT '1',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `playlists_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `playlists`
+--
+
+LOCK TABLES `playlists` WRITE;
+/*!40000 ALTER TABLE `playlists` DISABLE KEYS */;
+/*!40000 ALTER TABLE `playlists` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `post_hashtags`
+--
+
+DROP TABLE IF EXISTS `post_hashtags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `post_hashtags` (
+  `post_id` int NOT NULL,
+  `hashtag_id` int NOT NULL,
+  PRIMARY KEY (`post_id`,`hashtag_id`),
+  UNIQUE KEY `post_hashtags_hashtag_id_post_id_unique` (`post_id`,`hashtag_id`),
+  KEY `hashtag_id` (`hashtag_id`),
+  CONSTRAINT `post_hashtags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `post_hashtags_ibfk_2` FOREIGN KEY (`hashtag_id`) REFERENCES `hashtags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `post_hashtags`
+--
+
+LOCK TABLES `post_hashtags` WRITE;
+/*!40000 ALTER TABLE `post_hashtags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `post_hashtags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `post_reactions`
+--
+
+DROP TABLE IF EXISTS `post_reactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `post_reactions` (
+  `post_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `reaction_type` varchar(20) NOT NULL DEFAULT 'like',
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`post_id`,`user_id`),
+  UNIQUE KEY `post_reactions_user_id_post_id_unique` (`post_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `post_reactions_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `post_reactions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `post_reactions`
+--
+
+LOCK TABLES `post_reactions` WRITE;
+/*!40000 ALTER TABLE `post_reactions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `post_reactions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `posts`
+--
+
+DROP TABLE IF EXISTS `posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `posts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `song_id` int NOT NULL,
+  `snippet_start_time` int NOT NULL,
+  `snippet_end_time` int NOT NULL,
+  `caption` text,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `song_id` (`song_id`),
+  CONSTRAINT `posts_ibfk_89` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `posts_ibfk_90` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `posts`
+--
+
+LOCK TABLES `posts` WRITE;
+/*!40000 ALTER TABLE `posts` DISABLE KEYS */;
+INSERT INTO `posts` VALUES (5,17,14,102,147,'Nhạc chill chill','2026-07-23 15:10:35','2026-07-23 15:10:35',NULL),(6,17,14,89,149,'Nhạc chill chill','2026-07-23 15:24:07','2026-07-23 15:24:07',NULL);
+/*!40000 ALTER TABLE `posts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reports`
+--
+
+DROP TABLE IF EXISTS `reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reports` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `reporter_id` int NOT NULL,
+  `reported_entity_type` varchar(50) NOT NULL,
+  `reported_entity_id` int NOT NULL,
+  `reason` text NOT NULL,
+  `status` varchar(20) DEFAULT 'pending',
+  `admin_id` int DEFAULT NULL,
+  `resolved_at` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `reports_reported_entity_type_reported_entity_id` (`reported_entity_type`,`reported_entity_id`),
+  KEY `reporter_id` (`reporter_id`),
+  KEY `admin_id` (`admin_id`),
+  CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reports`
+--
+
+LOCK TABLES `reports` WRITE;
+/*!40000 ALTER TABLE `reports` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reports` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `name_2` (`name`),
+  UNIQUE KEY `name_3` (`name`),
+  UNIQUE KEY `name_4` (`name`),
+  UNIQUE KEY `name_5` (`name`),
+  UNIQUE KEY `name_6` (`name`),
+  UNIQUE KEY `name_7` (`name`),
+  UNIQUE KEY `name_8` (`name`),
+  UNIQUE KEY `name_9` (`name`),
+  UNIQUE KEY `name_10` (`name`),
+  UNIQUE KEY `name_11` (`name`),
+  UNIQUE KEY `name_12` (`name`),
+  UNIQUE KEY `name_13` (`name`),
+  UNIQUE KEY `name_14` (`name`),
+  UNIQUE KEY `name_15` (`name`),
+  UNIQUE KEY `name_16` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `roles`
+--
+
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'superadmin','Super administrator with all permissions.'),(2,'admin','Administrator');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `song_artists`
+--
+
+DROP TABLE IF EXISTS `song_artists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `song_artists` (
+  `song_id` int NOT NULL,
+  `artist_id` int NOT NULL,
+  `role` varchar(50) DEFAULT 'performer',
+  `sort_order` int DEFAULT '0',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`song_id`,`artist_id`),
+  UNIQUE KEY `song_artists_artist_id_song_id_unique` (`song_id`,`artist_id`),
+  KEY `artist_id` (`artist_id`),
+  CONSTRAINT `song_artists_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `song_artists_ibfk_2` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `song_artists`
+--
+
+LOCK TABLES `song_artists` WRITE;
+/*!40000 ALTER TABLE `song_artists` DISABLE KEYS */;
+INSERT INTO `song_artists` VALUES (14,29,'performer',0,'2026-07-23 15:02:48','2026-07-23 15:02:48',NULL);
+/*!40000 ALTER TABLE `song_artists` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `song_hashtags`
+--
+
+DROP TABLE IF EXISTS `song_hashtags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `song_hashtags` (
+  `song_id` int NOT NULL,
+  `hashtag_id` int NOT NULL,
+  PRIMARY KEY (`song_id`,`hashtag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `song_hashtags`
+--
+
+LOCK TABLES `song_hashtags` WRITE;
+/*!40000 ALTER TABLE `song_hashtags` DISABLE KEYS */;
+/*!40000 ALTER TABLE `song_hashtags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `songs`
+--
+
+DROP TABLE IF EXISTS `songs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `songs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `hls_streaming_url` text NOT NULL,
+  `cover_url` text,
+  `duration` int DEFAULT NULL,
+  `creator_id` int NOT NULL,
+  `genre_id` int DEFAULT NULL,
+  `lyrics_timestamp` text,
+  `status` enum('pending','processing','approved','rejected','flagged') DEFAULT 'pending',
+  `copyright_status` enum('unverified','clean','matched','flagged','disputed') DEFAULT 'unverified',
+  `external_song_title` varchar(255) DEFAULT NULL,
+  `external_artist_name` varchar(255) DEFAULT NULL,
+  `external_buy_link` text,
+  `match_score` float DEFAULT '0',
+  `is_eligible_for_monetization` tinyint(1) DEFAULT '1',
+  `deleted_at` datetime DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `license_type` varchar(50) DEFAULT 'unknown',
+  `is_cover` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `creator_id` (`creator_id`),
+  KEY `genre_id` (`genre_id`),
+  CONSTRAINT `songs_ibfk_51` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `songs_ibfk_52` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `songs`
+--
+
+LOCK TABLES `songs` WRITE;
+/*!40000 ALTER TABLE `songs` DISABLE KEYS */;
+INSERT INTO `songs` VALUES (14,'01 Solar Coast','/api/uploads/song-14/1784818968077-01 Solar Coast.mp3','/api/uploads/song-14/1784818968139-IMG_20260607_053516.jpg',210,17,NULL,NULL,'approved','clean',NULL,NULL,NULL,0,1,NULL,'2026-07-23 15:02:48','2026-07-23 15:02:53','unknown',0);
+/*!40000 ALTER TABLE `songs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_consents`
+--
+
+DROP TABLE IF EXISTS `user_consents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_consents` (
+  `user_id` int NOT NULL,
+  `document_id` int NOT NULL,
+  `accepted_at` datetime NOT NULL,
+  KEY `user_id` (`user_id`),
+  KEY `document_id` (`document_id`),
+  CONSTRAINT `user_consents_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_consents_ibfk_4` FOREIGN KEY (`document_id`) REFERENCES `legal_documents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_consents`
+--
+
+LOCK TABLES `user_consents` WRITE;
+/*!40000 ALTER TABLE `user_consents` DISABLE KEYS */;
+INSERT INTO `user_consents` VALUES (17,1,'2026-07-23 14:54:19'),(18,1,'2026-07-23 15:18:13');
+/*!40000 ALTER TABLE `user_consents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_listening_details`
+--
+
+DROP TABLE IF EXISTS `user_listening_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_listening_details` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `song_id` int NOT NULL,
+  `listen_timestamp` datetime DEFAULT NULL,
+  `duration_listened` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `song_id` (`song_id`),
+  CONSTRAINT `user_listening_details_ibfk_81` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_listening_details_ibfk_82` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_listening_details`
+--
+
+LOCK TABLES `user_listening_details` WRITE;
+/*!40000 ALTER TABLE `user_listening_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_listening_details` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_roles`
+--
+
+DROP TABLE IF EXISTS `user_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_roles` (
+  `user_id` int NOT NULL,
+  `role_id` int NOT NULL,
+  PRIMARY KEY (`user_id`,`role_id`),
+  UNIQUE KEY `user_roles_role_id_user_id_unique` (`user_id`,`role_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_roles`
+--
+
+LOCK TABLES `user_roles` WRITE;
+/*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_sessions`
+--
+
+DROP TABLE IF EXISTS `user_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_sessions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `refresh_token` varchar(500) NOT NULL,
+  `device_id` varchar(255) DEFAULT NULL,
+  `is_revoked` tinyint(1) DEFAULT '0',
+  `expires_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `refresh_token` (`refresh_token`),
+  UNIQUE KEY `refresh_token_2` (`refresh_token`),
+  UNIQUE KEY `refresh_token_3` (`refresh_token`),
+  UNIQUE KEY `refresh_token_4` (`refresh_token`),
+  UNIQUE KEY `refresh_token_5` (`refresh_token`),
+  UNIQUE KEY `refresh_token_6` (`refresh_token`),
+  UNIQUE KEY `refresh_token_7` (`refresh_token`),
+  UNIQUE KEY `refresh_token_8` (`refresh_token`),
+  UNIQUE KEY `refresh_token_9` (`refresh_token`),
+  UNIQUE KEY `refresh_token_10` (`refresh_token`),
+  UNIQUE KEY `refresh_token_11` (`refresh_token`),
+  UNIQUE KEY `refresh_token_12` (`refresh_token`),
+  UNIQUE KEY `refresh_token_13` (`refresh_token`),
+  UNIQUE KEY `refresh_token_14` (`refresh_token`),
+  UNIQUE KEY `refresh_token_15` (`refresh_token`),
+  UNIQUE KEY `refresh_token_16` (`refresh_token`),
+  UNIQUE KEY `refresh_token_17` (`refresh_token`),
+  UNIQUE KEY `refresh_token_18` (`refresh_token`),
+  UNIQUE KEY `refresh_token_19` (`refresh_token`),
+  UNIQUE KEY `refresh_token_20` (`refresh_token`),
+  UNIQUE KEY `refresh_token_21` (`refresh_token`),
+  UNIQUE KEY `refresh_token_22` (`refresh_token`),
+  UNIQUE KEY `refresh_token_23` (`refresh_token`),
+  UNIQUE KEY `refresh_token_24` (`refresh_token`),
+  UNIQUE KEY `refresh_token_25` (`refresh_token`),
+  UNIQUE KEY `refresh_token_26` (`refresh_token`),
+  UNIQUE KEY `refresh_token_27` (`refresh_token`),
+  UNIQUE KEY `refresh_token_28` (`refresh_token`),
+  UNIQUE KEY `refresh_token_29` (`refresh_token`),
+  UNIQUE KEY `refresh_token_30` (`refresh_token`),
+  UNIQUE KEY `refresh_token_31` (`refresh_token`),
+  UNIQUE KEY `refresh_token_32` (`refresh_token`),
+  UNIQUE KEY `refresh_token_33` (`refresh_token`),
+  UNIQUE KEY `refresh_token_34` (`refresh_token`),
+  UNIQUE KEY `refresh_token_35` (`refresh_token`),
+  UNIQUE KEY `refresh_token_36` (`refresh_token`),
+  UNIQUE KEY `refresh_token_37` (`refresh_token`),
+  UNIQUE KEY `refresh_token_38` (`refresh_token`),
+  UNIQUE KEY `refresh_token_39` (`refresh_token`),
+  UNIQUE KEY `refresh_token_40` (`refresh_token`),
+  UNIQUE KEY `refresh_token_41` (`refresh_token`),
+  UNIQUE KEY `refresh_token_42` (`refresh_token`),
+  UNIQUE KEY `refresh_token_43` (`refresh_token`),
+  UNIQUE KEY `refresh_token_44` (`refresh_token`),
+  UNIQUE KEY `refresh_token_45` (`refresh_token`),
+  UNIQUE KEY `refresh_token_46` (`refresh_token`),
+  UNIQUE KEY `refresh_token_47` (`refresh_token`),
+  UNIQUE KEY `refresh_token_48` (`refresh_token`),
+  UNIQUE KEY `refresh_token_49` (`refresh_token`),
+  UNIQUE KEY `refresh_token_50` (`refresh_token`),
+  UNIQUE KEY `refresh_token_51` (`refresh_token`),
+  UNIQUE KEY `refresh_token_52` (`refresh_token`),
+  UNIQUE KEY `refresh_token_53` (`refresh_token`),
+  UNIQUE KEY `refresh_token_54` (`refresh_token`),
+  UNIQUE KEY `refresh_token_55` (`refresh_token`),
+  UNIQUE KEY `refresh_token_56` (`refresh_token`),
+  UNIQUE KEY `refresh_token_57` (`refresh_token`),
+  UNIQUE KEY `refresh_token_58` (`refresh_token`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_sessions`
+--
+
+LOCK TABLES `user_sessions` WRITE;
+/*!40000 ALTER TABLE `user_sessions` DISABLE KEYS */;
+INSERT INTO `user_sessions` VALUES (15,17,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImlhdCI6MTc4NDgxODQ5OCwiZXhwIjoxNzg3NDEwNDk4fQ.sTt0seVHYlU9MJN6Mmpsq-r4kmU3JKV4hE_kNycLnh4','okhttp/4.12.0',0,'2026-08-22 14:54:58','2026-07-23 14:54:58'),(16,17,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImlhdCI6MTc4NDgxODg0NSwiZXhwIjoxNzg3NDEwODQ1fQ.DqcVwHM-u7DnqfSI28cgd9E9O0_Hnta8fsq7BorZ-dw','okhttp/4.12.0',0,'2026-08-22 15:00:45','2026-07-23 15:00:45'),(17,18,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc4NDgyMDExOCwiZXhwIjoxNzg3NDEyMTE4fQ.lZ_eG9VSqT4DI-yKZHY0UBXPD6ny4p2QPeZVpBHjBH4','okhttp/4.12.0',0,'2026-08-22 15:21:58','2026-07-23 15:21:58'),(18,18,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc4NDgyMDEzOCwiZXhwIjoxNzg3NDEyMTM4fQ.2XbB0cZuoi0-Fa_54zAzpBI3Tth-FGPvGUDC6xzq4Rc','okhttp/4.12.0',0,'2026-08-22 15:22:18','2026-07-23 15:22:18'),(19,17,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImlhdCI6MTc4NDgyMDIyMSwiZXhwIjoxNzg3NDEyMjIxfQ.zixToubu4Ghre5UQfb2KrBwcUE5qZFTCK0nvON3BL-o','okhttp/4.12.0',0,'2026-08-22 15:23:41','2026-07-23 15:23:41'),(20,18,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc4NDgyMDcyNCwiZXhwIjoxNzg3NDEyNzI0fQ.G6tyufMr3DHOl5PHpBNOKDRv9Z5r_7BoFW_a3dwDnAw','okhttp/4.12.0',0,'2026-08-22 15:32:04','2026-07-23 15:32:04'),(21,18,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc4NDgyMTA3MiwiZXhwIjoxNzg3NDEzMDcyfQ.mv5s56r2npvdJ-AUpeSdCZt7RmpNXVfnrT4vPthn9JY','okhttp/4.12.0',0,'2026-08-22 15:37:52','2026-07-23 15:37:52'),(22,18,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc4NDgyMTIxOSwiZXhwIjoxNzg3NDEzMjE5fQ.GWE_MM1-EMmbbJrGl9IyL-ve20eFKfPoCdnCCS53l5w','okhttp/4.12.0',0,'2026-08-22 15:40:19','2026-07-23 15:40:19');
+/*!40000 ALTER TABLE `user_sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `strike_count` int DEFAULT '0',
+  `status` varchar(20) DEFAULT 'active',
+  `last_tos_accepted_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `username` varchar(100) NOT NULL,
+  `phone_number` varchar(20) DEFAULT NULL COMMENT 'Optional phone - not globally unique',
+  `password_hash` varchar(255) DEFAULT NULL,
+  `auth_provider` varchar(50) NOT NULL DEFAULT 'email',
+  `apple_user_id` varchar(255) DEFAULT NULL COMMENT 'Apple ID - not globally unique, validated per auth_provider',
+  `avatar_url` text,
+  `bio` text,
+  `theme_preference` varchar(20) DEFAULT 'dark',
+  `email_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `email_verification_code` varchar(10) DEFAULT NULL,
+  `email_verification_expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username_14` (`username`),
+  UNIQUE KEY `users_username_unique` (`username`),
+  UNIQUE KEY `apple_user_id_2` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_3` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_4` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_5` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_6` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_7` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_8` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_9` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_10` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_11` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_12` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_13` (`apple_user_id`),
+  UNIQUE KEY `email_14` (`email`),
+  UNIQUE KEY `apple_user_id_14` (`apple_user_id`),
+  UNIQUE KEY `apple_user_id_15` (`apple_user_id`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  UNIQUE KEY `users_auth_provider_apple_id_unique` (`auth_provider`,`apple_user_id`),
+  KEY `idx_phone_number` (`phone_number`),
+  KEY `idx_apple_user_id` (`apple_user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (17,'vlwavip@gmail.com','2026-07-23 14:54:19','2026-07-23 14:54:47',0,'active','2026-07-23 14:54:19',NULL,'Thế Bùi',NULL,'$2a$10$fyhmXiDncyONZw/JgOzK/eBJVnjdsCci0ScfdSEe7RY65k3GmzvFa','email',NULL,NULL,NULL,'dark',1,NULL,NULL),(18,'vlwavip4@gmail.com','2026-07-23 15:18:13','2026-07-23 15:18:47',0,'active','2026-07-23 15:18:13',NULL,'Quang Nhật',NULL,'$2a$10$xn./HUFIuYpihiR/3Gt.jeOdmsdWUR6nkL.Kj0xB0f1SIbiGaw7QW','email',NULL,NULL,NULL,'dark',1,NULL,NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'lt_web'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-07-23 23:04:46
